@@ -21,6 +21,7 @@ namespace Courses.Model
             //Database.EnsureDeleted();
             Database.EnsureCreated();
             Debug.WriteLine(Database.ProviderName);
+            Debug.WriteLine(Database.GetConnectionString());
         }
 
         public static DbContextOptions<ApplicationContext> GetOptions(string connectionString)
