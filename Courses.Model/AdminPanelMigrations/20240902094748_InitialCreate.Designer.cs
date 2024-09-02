@@ -12,7 +12,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Courses.Model.AdminPanelMigrations
 {
     [DbContext(typeof(ApplicationContext))]
-    [Migration("20240715121024_InitialCreate")]
+    [Migration("20240902094748_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -20,7 +20,7 @@ namespace Courses.Model.AdminPanelMigrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "8.0.7")
+                .HasAnnotation("ProductVersion", "8.0.8")
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
@@ -256,21 +256,21 @@ namespace Courses.Model.AdminPanelMigrations
                         {
                             Id = 1,
                             IsVisible = true,
-                            LastChangeDateTime = new DateTime(2024, 7, 15, 12, 10, 24, 757, DateTimeKind.Utc).AddTicks(4360),
+                            LastChangeDateTime = new DateTime(2024, 9, 2, 9, 47, 48, 624, DateTimeKind.Utc).AddTicks(3416),
                             LocalizationId = 1
                         },
                         new
                         {
                             Id = 2,
                             IsVisible = true,
-                            LastChangeDateTime = new DateTime(2024, 7, 15, 12, 10, 24, 757, DateTimeKind.Utc).AddTicks(4363),
+                            LastChangeDateTime = new DateTime(2024, 9, 2, 9, 47, 48, 624, DateTimeKind.Utc).AddTicks(3419),
                             LocalizationId = 2
                         },
                         new
                         {
                             Id = 3,
                             IsVisible = true,
-                            LastChangeDateTime = new DateTime(2024, 7, 15, 12, 10, 24, 757, DateTimeKind.Utc).AddTicks(4363),
+                            LastChangeDateTime = new DateTime(2024, 9, 2, 9, 47, 48, 624, DateTimeKind.Utc).AddTicks(3420),
                             LocalizationId = 3
                         });
                 });
@@ -506,13 +506,11 @@ namespace Courses.Model.AdminPanelMigrations
 
                     b.Property<string>("Description")
                         .IsRequired()
-                        .HasMaxLength(1)
-                        .HasColumnType("character varying(1)");
+                        .HasColumnType("text");
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasMaxLength(1)
-                        .HasColumnType("character varying(1)");
+                        .HasColumnType("text");
 
                     b.HasKey("Id");
 
@@ -868,25 +866,25 @@ namespace Courses.Model.AdminPanelMigrations
                     b.HasData(
                         new
                         {
-                            Id = "9a716d8a-059c-466a-bb24-d699cf7921f9",
+                            Id = "bc11c2a2-b755-45b7-9764-1dfa8b942c26",
                             Name = "value__",
                             NormalizedName = "VALUE__"
                         },
                         new
                         {
-                            Id = "e4c15d11-c23d-478b-aefd-6681c5be10d2",
+                            Id = "6841bfac-9480-45ae-8a56-2fe7cf4eb639",
                             Name = "Admin",
                             NormalizedName = "ADMIN"
                         },
                         new
                         {
-                            Id = "4df73cfe-fc1d-4e6f-89c5-7e7d11b61704",
+                            Id = "007a05d8-e2b6-4838-8415-4a8e1164a569",
                             Name = "Author",
                             NormalizedName = "AUTHOR"
                         },
                         new
                         {
-                            Id = "870ee103-99af-440f-83e3-3d7ee6f765d8",
+                            Id = "e3c1e619-7b2b-460d-ab1a-598bd995b5a8",
                             Name = "Regular",
                             NormalizedName = "REGULAR"
                         });

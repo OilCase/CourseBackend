@@ -72,8 +72,8 @@ namespace Courses.Model.AdminPanelMigrations
                 {
                     Id = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    Name = table.Column<string>(type: "character varying(1)", maxLength: 1, nullable: false),
-                    Description = table.Column<string>(type: "character varying(1)", maxLength: 1, nullable: false)
+                    Name = table.Column<string>(type: "text", nullable: false),
+                    Description = table.Column<string>(type: "text", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -748,10 +748,10 @@ namespace Courses.Model.AdminPanelMigrations
                 columns: new[] { "Id", "ConcurrencyStamp", "Name", "NormalizedName" },
                 values: new object[,]
                 {
-                    { "4df73cfe-fc1d-4e6f-89c5-7e7d11b61704", null, "Author", "AUTHOR" },
-                    { "870ee103-99af-440f-83e3-3d7ee6f765d8", null, "Regular", "REGULAR" },
-                    { "9a716d8a-059c-466a-bb24-d699cf7921f9", null, "value__", "VALUE__" },
-                    { "e4c15d11-c23d-478b-aefd-6681c5be10d2", null, "Admin", "ADMIN" }
+                    { "007a05d8-e2b6-4838-8415-4a8e1164a569", null, "Author", "AUTHOR" },
+                    { "6841bfac-9480-45ae-8a56-2fe7cf4eb639", null, "Admin", "ADMIN" },
+                    { "bc11c2a2-b755-45b7-9764-1dfa8b942c26", null, "value__", "VALUE__" },
+                    { "e3c1e619-7b2b-460d-ab1a-598bd995b5a8", null, "Regular", "REGULAR" }
                 });
 
             migrationBuilder.InsertData(
@@ -779,9 +779,9 @@ namespace Courses.Model.AdminPanelMigrations
                 columns: new[] { "Id", "IsVisible", "LastChangeDateTime", "LocalizationId" },
                 values: new object[,]
                 {
-                    { 1, true, new DateTime(2024, 7, 15, 12, 10, 24, 757, DateTimeKind.Utc).AddTicks(4360), 1 },
-                    { 2, true, new DateTime(2024, 7, 15, 12, 10, 24, 757, DateTimeKind.Utc).AddTicks(4363), 2 },
-                    { 3, true, new DateTime(2024, 7, 15, 12, 10, 24, 757, DateTimeKind.Utc).AddTicks(4363), 3 }
+                    { 1, true, new DateTime(2024, 9, 2, 9, 47, 48, 624, DateTimeKind.Utc).AddTicks(3416), 1 },
+                    { 2, true, new DateTime(2024, 9, 2, 9, 47, 48, 624, DateTimeKind.Utc).AddTicks(3419), 2 },
+                    { 3, true, new DateTime(2024, 9, 2, 9, 47, 48, 624, DateTimeKind.Utc).AddTicks(3420), 3 }
                 });
 
             migrationBuilder.InsertData(

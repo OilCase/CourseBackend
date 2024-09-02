@@ -1,4 +1,5 @@
-﻿using Courses.Model.Courses.Testings;
+﻿using System.Security.AccessControl;
+using Courses.Model.Courses.Testings;
 
 namespace Courses.Model.Courses
 {
@@ -16,6 +17,7 @@ namespace Courses.Model.Courses
         public SaleableProduct? SaleableProduct { get; set; }
         public int CourseId { get; set; }
         public Course Course { get; set; }
+        public int OrderInPart { get; set; }
 
         public virtual ICollection<Section> Sections { get; set; } = new List<Section>();
 
