@@ -13,7 +13,6 @@ namespace Courses.Model.Courses
         public int ChapterId { get; set; }
         public Chapter Chapter { get; set; }
         public string? Title { get; set; }
-        public int OrderInChapter { get; set; }
 
         public Section()
         {

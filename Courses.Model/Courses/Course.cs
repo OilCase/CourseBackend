@@ -279,7 +279,7 @@ namespace Courses.Model.Courses
             
             Section section = new Section(this)
             {
-                Title = "Section 1"
+                Title = "Section 1",
             };
 
             Chapter chapter = new Chapter()
@@ -299,7 +299,7 @@ namespace Courses.Model.Courses
 
             Part part = new Part()
             {
-                Title = "Part 1"
+                Title = "Part 1",
             };
             part.Chapters.Add(chapter);
 
