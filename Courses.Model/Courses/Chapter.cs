@@ -17,6 +17,7 @@ namespace Courses.Model.Courses
         public SaleableProduct? SaleableProduct { get; set; }
         public int CourseId { get; set; }
         public Course Course { get; set; }
+        public int OrderInPart { get; set; }
 
         public virtual ICollection<Section> Sections { get; set; } = new List<Section>();
 

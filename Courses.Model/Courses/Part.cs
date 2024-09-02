@@ -6,6 +6,7 @@
         public int CourseId { get; set; }
         public Course Course { get; set; } = null!;
         public string Title { get; set; }
+        public int OrderInCourse { get; set; }
 
         public virtual ICollection<Chapter> Chapters { get; set; } = new List<Chapter>();
 

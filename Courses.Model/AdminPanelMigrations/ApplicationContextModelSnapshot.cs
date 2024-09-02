@@ -33,6 +33,9 @@ namespace Courses.Model.AdminPanelMigrations
                     b.Property<int>("CourseId")
                         .HasColumnType("integer");
 
+                    b.Property<int>("OrderInPart")
+                        .HasColumnType("integer");
+
                     b.Property<int>("PartId")
                         .HasColumnType("integer");
 
@@ -253,21 +256,21 @@ namespace Courses.Model.AdminPanelMigrations
                         {
                             Id = 1,
                             IsVisible = true,
-                            LastChangeDateTime = new DateTime(2024, 9, 2, 12, 7, 5, 589, DateTimeKind.Utc).AddTicks(8111),
+                            LastChangeDateTime = new DateTime(2024, 9, 2, 9, 53, 21, 507, DateTimeKind.Utc).AddTicks(6340),
                             LocalizationId = 1
                         },
                         new
                         {
                             Id = 2,
                             IsVisible = true,
-                            LastChangeDateTime = new DateTime(2024, 9, 2, 12, 7, 5, 589, DateTimeKind.Utc).AddTicks(8115),
+                            LastChangeDateTime = new DateTime(2024, 9, 2, 9, 53, 21, 507, DateTimeKind.Utc).AddTicks(6346),
                             LocalizationId = 2
                         },
                         new
                         {
                             Id = 3,
                             IsVisible = true,
-                            LastChangeDateTime = new DateTime(2024, 9, 2, 12, 7, 5, 589, DateTimeKind.Utc).AddTicks(8116),
+                            LastChangeDateTime = new DateTime(2024, 9, 2, 9, 53, 21, 507, DateTimeKind.Utc).AddTicks(6346),
                             LocalizationId = 3
                         });
                 });
@@ -331,6 +334,9 @@ namespace Courses.Model.AdminPanelMigrations
                     b.Property<int>("CourseId")
                         .HasColumnType("integer");
 
+                    b.Property<int>("OrderInCourse")
+                        .HasColumnType("integer");
+
                     b.Property<string>("Title")
                         .IsRequired()
                         .HasColumnType("text");
@@ -373,6 +379,9 @@ namespace Courses.Model.AdminPanelMigrations
                         .HasColumnType("integer");
 
                     b.Property<int>("CourseId")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("OrderInChapter")
                         .HasColumnType("integer");
 
                     b.Property<string>("Title")
@@ -863,25 +872,25 @@ namespace Courses.Model.AdminPanelMigrations
                     b.HasData(
                         new
                         {
-                            Id = "3042bfff-23d4-48e9-bcb5-a9c6fd45a1d9",
+                            Id = "dfc40882-1e0a-4f2e-97f4-87fbf390051c",
                             Name = "value__",
                             NormalizedName = "VALUE__"
                         },
                         new
                         {
-                            Id = "551b514e-2bf8-43bc-b62f-80bbfceaf8cd",
+                            Id = "9cd0afb6-3620-4b73-8765-223e7dc53019",
                             Name = "Admin",
                             NormalizedName = "ADMIN"
                         },
                         new
                         {
-                            Id = "4ec84855-b232-4ebe-81ba-d4bd34990b1c",
+                            Id = "0273822a-abc3-4430-a0c3-037d301aa87f",
                             Name = "Author",
                             NormalizedName = "AUTHOR"
                         },
                         new
                         {
-                            Id = "38ae04f6-9f61-4435-9adb-7902efe87977",
+                            Id = "829eaa3e-5f10-4237-a5bb-5b366c4d1eac",
                             Name = "Regular",
                             NormalizedName = "REGULAR"
                         });
