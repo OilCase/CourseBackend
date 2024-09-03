@@ -19,7 +19,7 @@ namespace Courses.Model
         public ApplicationContext(DbContextOptions options) : base(options)
         {
             //Database.EnsureDeleted();
-            //Database.EnsureCreated();
+            Database.EnsureCreated();
             Debug.WriteLine(Database.ProviderName);
             Debug.WriteLine(Database.GetConnectionString());
         }
