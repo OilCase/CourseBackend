@@ -48,13 +48,6 @@ namespace Courses.Model
 
             DefineAutoIncludes(builder);
 
-            builder.Entity<IdentityRole>().HasData(
-                typeof(EnumUserRoles).GetFields().Select(f => new IdentityRole()
-                {
-                    Name = f.Name,
-                    NormalizedName = f.Name.ToUpper(),
-                }).ToArray());
-
             base.OnModelCreating(builder);
         }
 

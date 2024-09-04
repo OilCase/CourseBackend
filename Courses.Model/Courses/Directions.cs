@@ -6,7 +6,7 @@
         public int LocalizationId { get; set; }
         public Localization Localization { get; set; }
         public bool IsVisible { get; set; } // видимость направления на сайте
-        public DateTime LastChangeDateTime { get; set; } = DateTime.UtcNow;
+        public DateTime LastChangeDateTime { get; set; }
     }
 
     public class CourseDirection
