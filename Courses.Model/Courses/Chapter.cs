@@ -37,7 +37,10 @@ namespace Courses.Model.Courses
 
         public void AddSection()
         {
-            Sections.Add(new Section(Course));
+            Sections.Add(new Section(Course)
+            {
+                OrderInChapter = 1
+            });
         }
 
         /// <summary>

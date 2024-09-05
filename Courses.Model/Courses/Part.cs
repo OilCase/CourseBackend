@@ -21,6 +21,7 @@
             {
                 Course = Course,
                 CourseId = Course.Id,
+                OrderInPart = 1
             };
             if (Course.IsPartialAvailable)
             {
