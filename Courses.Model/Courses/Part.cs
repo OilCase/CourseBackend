@@ -1,4 +1,6 @@
-﻿namespace Courses.Model.Courses
+﻿using static System.Collections.Specialized.BitVector32;
+
+namespace Courses.Model.Courses
 {
     public class Part
     {
@@ -14,6 +16,32 @@
         /// Формирует имя части из индекса части и заголовка части
         /// </summary>
         public string GetFullTitle() => $"Часть {OrderInCourse}: {Title}";
+
+        /// <summary>
+        /// Вычисляет новые значения порядков
+        /// глав в части
+        /// </summary>
+        /// <param name="firstChapId"></param>
+        /// <param name="secondChapId"></param>
+        public void ReorderChapters(int firstChapId, int? secondChapId = null)
+        {
+            var firstChapter = Chapters.First(s => s.Id == firstChapId);
+            if (secondChapId == null) // First section delete case
+            {
+                var followingChapters = Chapters.Where(s => s.Id > firstChapId).ToArray();
+                foreach (var chapter in followingChapters)
+                {
+                    chapter.OrderInPart -= 1;
+                }
+
+                return;
+            }
+
+            // Sections swap case
+            var secondSection = Chapters.First(s => s.Id == (int)secondChapId);
+            (firstChapter.OrderInPart, secondSection.OrderInPart) // swap
+                = (secondSection.OrderInPart, firstChapter.OrderInPart);
+        }
 
         public void AddChapter()
         {
