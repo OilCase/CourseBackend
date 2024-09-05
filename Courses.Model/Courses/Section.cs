@@ -12,8 +12,18 @@ namespace Courses.Model.Courses
         public Course Course { get; set; }
         public int ChapterId { get; set; }
         public Chapter Chapter { get; set; }
-        public string? Title { get; set; }
+        public string? Title { get; set; } = "";
         public int OrderInChapter { get; set; }
+
+        /// <summary>
+        ///  Формирует имя раздела из индекса части, индекса главы,
+        /// индекса раздела и заголовка раздела
+        /// </summary>
+        public string GetFullTitle()
+        {
+            var (partIndex, chapIndex, secIndex) = GetIndexes();
+            return $"Раздел {partIndex}.{chapIndex}.{secIndex}: {Title}";
+        }
 
         /// <summary> Возвращает кортеж: индекс родительской части, родительской главы и порядковый номер раздела в главе </summary>
         public (int partIndex, int chapterIndex, int sectionIndex) GetIndexes() => (Chapter.Part.OrderInCourse, Chapter.OrderInPart, OrderInChapter);

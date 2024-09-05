@@ -10,6 +10,9 @@
 
         public virtual ICollection<Chapter> Chapters { get; set; } = new List<Chapter>();
 
+        /// <summary>
+        /// Формирует имя части из индекса части и заголовка части
+        /// </summary>
         public string GetFullTitle() => $"Часть {OrderInCourse}: {Title}";
 
         public void AddChapter()

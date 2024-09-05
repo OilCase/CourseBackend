@@ -23,11 +23,13 @@ namespace Courses.Model.Courses
 
         public Testing Testing { get; set; }
 
-
+        /// <summary>
+        ///  Формирует имя главы из индекса части, индекса главы и заголовка главы
+        /// </summary>
         public string GetFullTitle()
         {
             var (partIndex, chapIndex) = GetIndexes();
-            return $"Глава {partIndex}.{chapIndex}:";
+            return $"Глава {partIndex}.{chapIndex}: {Title}";
         }
 
         /// <summary> Возвращает кортеж: индекс родительской части и порядковый номер главы в части </summary>
