@@ -3,7 +3,7 @@ using Courses.Model.Courses.Testings;
 
 namespace Courses.Model.Courses
 {
-    
+
 
     public class Chapter
     {
@@ -12,7 +12,7 @@ namespace Courses.Model.Courses
         public int Id { get; set; }
         public int PartId { get; set; }
         public Part Part { get; set; } = null!;
-        public string? Title { get; set; }
+        public string? Title { get; set; } = "";
         public int? SaleableProductId { get; set; }
         public SaleableProduct? SaleableProduct { get; set; }
         public int CourseId { get; set; }
@@ -23,15 +23,19 @@ namespace Courses.Model.Courses
 
         public Testing Testing { get; set; }
 
+
+        public string GetFullTitle()
+        {
+            var (partIndex, chapIndex) = GetIndexes();
+            return $"Глава {partIndex}.{chapIndex}:";
+        }
+
         /// <summary> Возвращает кортеж: индекс родительской части и порядковый номер главы в части </summary>
         public (int partIndex, int chapterIndex) GetIndexes() => (Part.OrderInCourse, OrderInPart); 
 
         public void AddSection()
         {
-            Sections.Add(new Section(Course)
-            {
-                Title = "Section 1"
-            });
+            Sections.Add(new Section(Course));
         }
 
         /// <summary>
