@@ -1,4 +1,5 @@
-﻿using System.Security.AccessControl;
+﻿using System.Linq;
+using System.Security.AccessControl;
 using Courses.Model.Courses.Testings;
 
 namespace Courses.Model.Courses
@@ -22,6 +23,32 @@ namespace Courses.Model.Courses
         public virtual ICollection<Section> Sections { get; set; } = new List<Section>();
 
         public Testing Testing { get; set; }
+
+        /// <summary>
+        /// Вычисляет новые значения порядков
+        /// разделов в главе
+        /// </summary>
+        /// <param name="firstSecId"></param>
+        /// <param name="secondSecId"></param>
+        public void ReorderSections(int firstSecId, int? secondSecId = null)
+        {
+            var firstSection = Sections.First(s => s.Id == firstSecId);
+            if (secondSecId == null) // First section delete case
+            {
+                var followingSections = Sections.Where(s => s.Id > firstSecId).ToArray();
+                foreach (var section in followingSections)
+                {
+                    section.OrderInChapter -= 1;
+                }
+
+                return;
+            }
+
+            // Sections swap case
+            var secondSection = Sections.First(s => s.Id == (int)secondSecId);
+            (firstSection.OrderInChapter, secondSection.OrderInChapter) // swap
+                = (secondSection.OrderInChapter, firstSection.OrderInChapter);
+        }
 
         /// <summary>
         ///  Формирует имя главы из индекса части, индекса главы и заголовка главы
