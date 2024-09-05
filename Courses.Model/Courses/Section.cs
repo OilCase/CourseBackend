@@ -15,6 +15,9 @@ namespace Courses.Model.Courses
         public string? Title { get; set; }
         public int OrderInChapter { get; set; }
 
+        /// <summary> Возвращает кортеж: индекс родительской части, родительской главы и порядковый номер раздела в главе </summary>
+        public (int partIndex, int chapterIndex, int sectionIndex) GetIndexes() => (Chapter.Part.OrderInCourse, Chapter.OrderInPart, OrderInChapter);
+
         public Section()
         {
         }

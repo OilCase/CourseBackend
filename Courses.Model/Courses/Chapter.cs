@@ -22,6 +22,10 @@ namespace Courses.Model.Courses
         public virtual ICollection<Section> Sections { get; set; } = new List<Section>();
 
         public Testing Testing { get; set; }
+
+        /// <summary> Возвращает кортеж: индекс родительской части и порядковый номер главы в части </summary>
+        public (int partIndex, int chapterIndex) GetIndexes() => (Part.OrderInCourse, OrderInPart); 
+
         public void AddSection()
         {
             Sections.Add(new Section(Course)

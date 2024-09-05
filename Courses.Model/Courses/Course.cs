@@ -279,14 +279,12 @@ namespace Courses.Model.Courses
             
             Section section = new Section(this)
             {
-                Title = "Section 1",
                 OrderInChapter = 1
             };
 
             Chapter chapter = new Chapter()
             {
                 Course = this,
-                Title = "Chapter 1",
                 OrderInPart = 1
             };
             if (IsPartialAvailable)
@@ -301,7 +299,6 @@ namespace Courses.Model.Courses
 
             Part part = new Part()
             {
-                Title = "Part 1",
                 OrderInCourse = 1
             };
             part.Chapters.Add(chapter);
