@@ -25,6 +25,47 @@ namespace Courses.Model.Courses
         public Testing Testing { get; set; }
 
         /// <summary>
+        /// Выполняет перемещение главы внутри части
+        /// </summary>
+        /// <param name="orientation"></param>
+        public void Move(EnumMoveOrientation orientation)
+        {
+            Chapter secondChapter;
+            if (orientation == EnumMoveOrientation.Up)
+            {
+                secondChapter = Course.Chapters.First(c => c.OrderInPart == (OrderInPart - 1));
+                Part.ReorderChapters(Id, secondChapter.Id);
+                return;
+            }
+
+            secondChapter = Course.Chapters.First(c => c.OrderInPart == (OrderInPart + 1));
+            Part.ReorderChapters(secondChapter.Id, Id);
+        }
+
+        /// <summary>
+        /// Возвращает true если порядок главы в части
+        /// можно изменить в соответствии с orientation.
+        /// False в противном случае
+        /// </summary>
+        /// <param name="orientation"></param>
+        /// <returns></returns>
+        public bool IsAbleToMove(EnumMoveOrientation orientation)
+        {
+            if (orientation == EnumMoveOrientation.Up && OrderInPart == 1)
+            {
+                return false;
+            }
+
+            var isLastChapter = Course.Chapters.Max(c => c.OrderInPart) == OrderInPart;
+            if (orientation == EnumMoveOrientation.Down && isLastChapter)
+            {
+                return false;
+            }
+
+            return true;
+        }
+
+        /// <summary>
         /// Вычисляет новые значения порядков
         /// разделов в главе
         /// </summary>
