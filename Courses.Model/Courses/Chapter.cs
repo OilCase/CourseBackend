@@ -33,12 +33,12 @@ namespace Courses.Model.Courses
             Chapter secondChapter;
             if (orientation == EnumMoveOrientation.Up)
             {
-                secondChapter = Course.Chapters.First(c => c.OrderInPart == (OrderInPart - 1));
+                secondChapter = Part.Chapters.First(c => c.OrderInPart == (OrderInPart - 1));
                 Part.ReorderChapters(Id, secondChapter.Id);
                 return;
             }
 
-            secondChapter = Course.Chapters.First(c => c.OrderInPart == (OrderInPart + 1));
+            secondChapter = Part.Chapters.First(c => c.OrderInPart == (OrderInPart + 1));
             Part.ReorderChapters(secondChapter.Id, Id);
         }
 
@@ -56,7 +56,7 @@ namespace Courses.Model.Courses
                 return false;
             }
 
-            var isLastChapter = Course.Chapters.Max(c => c.OrderInPart) == OrderInPart;
+            var isLastChapter = Part.Chapters.Max(c => c.OrderInPart) == OrderInPart;
             if (orientation == EnumMoveOrientation.Down && isLastChapter)
             {
                 return false;

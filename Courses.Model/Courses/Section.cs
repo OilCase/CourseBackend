@@ -16,6 +16,47 @@ namespace Courses.Model.Courses
         public int OrderInChapter { get; set; }
 
         /// <summary>
+        /// Выполняет перемещение раздела внутри главы
+        /// </summary>
+        /// <param name="orientation"></param>
+        public void Move(EnumMoveOrientation orientation)
+        {
+            Section secondSection;
+            if (orientation == EnumMoveOrientation.Up)
+            {
+                secondSection = Chapter.Sections.First(s => s.OrderInChapter == (OrderInChapter - 1));
+                Chapter.ReorderSections(Id, secondSection.Id);
+                return;
+            }
+
+            secondSection = Chapter.Sections.First(s => s.OrderInChapter == (OrderInChapter + 1));
+            Chapter.ReorderSections(secondSection.Id, Id);
+        }
+
+        /// <summary>
+        /// Возвращает true если порядок раздела в главе
+        /// можно изменить в соответствии с orientation.
+        /// False в противном случае
+        /// </summary>
+        /// <param name="orientation"></param>
+        /// <returns></returns>
+        public bool IsAbleToMove(EnumMoveOrientation orientation)
+        {
+            if (orientation == EnumMoveOrientation.Up && OrderInChapter == 1)
+            {
+                return false;
+            }
+
+            var isLastSection = Chapter.Sections.Max(s => s.OrderInChapter) == OrderInChapter;
+            if (orientation == EnumMoveOrientation.Down && isLastSection)
+            {
+                return false;
+            }
+
+            return true;
+        }
+
+        /// <summary>
         ///  Формирует имя раздела из индекса части, индекса главы,
         /// индекса раздела и заголовка раздела
         /// </summary>
@@ -26,7 +67,8 @@ namespace Courses.Model.Courses
         }
 
         /// <summary> Возвращает кортеж: индекс родительской части, родительской главы и порядковый номер раздела в главе </summary>
-        public (int partIndex, int chapterIndex, int sectionIndex) GetIndexes() => (Chapter.Part.OrderInCourse, Chapter.OrderInPart, OrderInChapter);
+        public (int partIndex, int chapterIndex, int sectionIndex) GetIndexes() => 
+               (Chapter.Part.OrderInCourse, Chapter.OrderInPart, OrderInChapter);
 
         public Section()
         {
