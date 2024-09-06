@@ -5,6 +5,12 @@ using Courses.Model.Courses.Testings;
 
 namespace Courses.Model.Courses
 {
+    public enum EnumMoveOrientation
+    {
+        [EnumMember(Value = "Up")] Up = 1,
+        [EnumMember(Value = "Down")] Down = 2
+    }
+
     public class Course
     {
         public int Id { get; set; }
@@ -48,9 +54,36 @@ namespace Courses.Model.Courses
         public virtual ICollection<CourseAuthor> CourseAuthors { get; set; } = new List<CourseAuthor>();
         public virtual ICollection<CourseDirection> CourseDirections { get; set; } = new List<CourseDirection>();
         public virtual ICollection<Section> Sections { get; set; } = new List<Section>();
+        public virtual ICollection<Chapter> Chapters { get; set; } = new List<Chapter>();
         public virtual ICollection<Part> Parts { get; set; } = new List<Part>();
         public virtual ICollection<Testing> Testings { get; set; } = new List<Testing>();
         public virtual ICollection<CourseChange> CourseChanges { get; set; } = new List<CourseChange>();
+
+        /// <summary>
+        /// Вычисляет новые значения порядков
+        /// частей в курсе
+        /// </summary>
+        /// <param name="firstPartId"></param>
+        /// <param name="secondPartId"></param>
+        public void ReorderParts(int firstPartId, int? secondPartId = null)
+        {
+            var firstPart = Parts.First(p => p.Id == firstPartId);
+            if (secondPartId == null) // First part delete case
+            {
+                var followingParts = Parts.Where(p => p.Id > firstPartId).ToArray();
+                foreach (var chapter in followingParts)
+                {
+                    chapter.OrderInCourse -= 1;
+                }
+
+                return;
+            }
+
+            // Part swap case
+            var secondPart = Parts.First(p => p.Id == (int)secondPartId);
+            (firstPart.OrderInCourse, secondPart.OrderInCourse) // swap
+                = (secondPart.OrderInCourse, firstPart.OrderInCourse);
+        }
 
         /// <summary>
         /// Возвращает true если основные настройки заполнены

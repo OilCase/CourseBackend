@@ -43,6 +43,47 @@ namespace Courses.Model.Courses
                 = (secondSection.OrderInPart, firstChapter.OrderInPart);
         }
 
+        /// <summary>
+        /// Выполняет перемещение части внутри курса
+        /// </summary>
+        /// <param name="orientation"></param>
+        public void Move(EnumMoveOrientation orientation)
+        {
+            Part secondPart;
+            if (orientation == EnumMoveOrientation.Up)
+            {
+                secondPart = Course.Parts.First(p => p.OrderInCourse == (OrderInCourse - 1));
+                Course.ReorderParts(Id, secondPart.Id);
+                return;
+            }
+
+            secondPart = Course.Parts.First(p => p.OrderInCourse == (OrderInCourse + 1));
+            Course.ReorderParts(secondPart.Id, Id);
+        }
+
+        /// <summary>
+        /// Возвращает true если порядок части в курсе
+        /// можно изменить в соответствии с orientation.
+        /// False в противном случае
+        /// </summary>
+        /// <param name="orientation"></param>
+        /// <returns></returns>
+        public bool IsAbleToMove(EnumMoveOrientation orientation)
+        {
+            if (orientation == EnumMoveOrientation.Up && OrderInCourse == 1)
+            {
+                return false;
+            }
+
+            var isLastPart = Course.Parts.Max(p => p.OrderInCourse) == OrderInCourse;
+            if (orientation == EnumMoveOrientation.Down && isLastPart)
+            {
+                return false;
+            }
+
+            return true;
+        }
+
         public void AddChapter()
         {
             var chapter = new Chapter()
