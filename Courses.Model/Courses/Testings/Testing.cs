@@ -1,4 +1,5 @@
-﻿using System.Runtime.Serialization;
+﻿using System.IO;
+using System.Runtime.Serialization;
 
 
 namespace Courses.Model.Courses.Testings
@@ -15,6 +16,33 @@ namespace Courses.Model.Courses.Testings
         public int NumberOfAttempts { get; set; }
         public int? CutScorePercentages { get; set; } // Проходной балл
         public List<Question> Questions { get; set; } = new();
+
+
+        /// <summary>
+        /// Вычисляет новые значения порядков
+        /// частей в курсе
+        /// </summary>
+        /// <param name="firstQuestionId"></param>
+        /// <param name="secondQuestionId"></param>
+        public void ReorderQuestions(int firstQuestionId, int? secondQuestionId = null)
+        {
+            var firstQuestion = Questions.First(q => q.Id == firstQuestionId);
+            if (secondQuestionId == null) // First part delete case
+            {
+                var followingQuestions = Questions.Where(p => p.Id > firstQuestionId).ToArray();
+                foreach (var question in followingQuestions)
+                {
+                    question.OrderInTesting -= 1;
+                }
+
+                return;
+            }
+
+            // Part swap case
+            var secondQuestion = Questions.First(q => q.Id == (int)secondQuestionId);
+            (firstQuestion.OrderInTesting, secondQuestion.OrderInTesting) // swap
+                = (secondQuestion.OrderInTesting, firstQuestion.OrderInTesting);
+        }
     }
 
     public enum EnumTestingCategory
