@@ -40,6 +40,6 @@
         ///// </summary>
         ///// <param name="path"></param>
         ///// <returns>Массив строк</returns>
-        //public List<string> ListFiles(string path);
+        public List<string> ListFiles(string path);
     }
 }

@@ -38,6 +38,11 @@ namespace Courses.FileStorage
             }
         }
 
+        public List<string> ListFiles(string path)
+        {
+            throw new NotImplementedException();
+        }
+
         //public async Task<string> UploadFile(string path, IFormFile file)
         //{
         //    var fullPath = Path.Combine(_contentPath, path);
