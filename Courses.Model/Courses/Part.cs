@@ -26,7 +26,7 @@ namespace Courses.Model.Courses
         public void ReorderChapters(int firstChapId, int? secondChapId = null)
         {
             var firstChapter = Chapters.First(s => s.Id == firstChapId);
-            if (secondChapId == null) // First section delete case
+            if (secondChapId == null) // First chapter delete case
             {
                 var followingChapters = Chapters.Where(s => s.Id > firstChapId).ToArray();
                 foreach (var chapter in followingChapters)
@@ -37,7 +37,7 @@ namespace Courses.Model.Courses
                 return;
             }
 
-            // Sections swap case
+            // Chapters swap case
             var secondSection = Chapters.First(s => s.Id == (int)secondChapId);
             (firstChapter.OrderInPart, secondSection.OrderInPart) // swap
                 = (secondSection.OrderInPart, firstChapter.OrderInPart);

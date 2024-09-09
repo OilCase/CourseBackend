@@ -12,6 +12,8 @@ namespace Courses.Model.Courses.Testings
         public Direction Direction { get; set; }
         public string? CompetenceId { get; set; }
         public Competence? Competence { get; set; }
+        public int OrderInTesting { get; set; }
+        public bool ShowFullTitle { get; set; } // отображать тело вопроса в названии или нет
 
         // Вес вопроса, определяется в админке и используется в OilID
         public int CorrectAnswerScore { get; set; }

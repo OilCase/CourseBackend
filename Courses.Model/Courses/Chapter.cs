@@ -121,11 +121,14 @@ namespace Courses.Model.Courses
             var testing = new Testing()
             {
                 Title = "Testing 1",
-                NumberOfAttempts = 1000
-                
+                NumberOfAttempts = 1000,
             };
 
-            var question = new Question();
+            var question = new Question()
+            {
+                OrderInTesting = 1
+            };
+
             if (course == null)
             {
                 question.Content = new Content()

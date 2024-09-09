@@ -248,6 +248,7 @@ namespace Courses.Model.Courses
 
             var question = new Question()
             {
+                OrderInTesting = 1,
                 Content = new Content()
                 {
                     Course = this
@@ -275,6 +276,7 @@ namespace Courses.Model.Courses
             };
             var question = new Question()
             {
+                OrderInTesting = 1,
                 Content = new()
                 {
                     Course = this
