@@ -7,6 +7,7 @@ namespace Courses.Model.Courses.Testings
         [Key]
         public int Id { get; set; }
         public int TestingId { get; set; }
+        public string Title { get; set; } = "";
         public Testing Testing { get; set; }
         public int? DirectionId { get; set; }
         public Direction Direction { get; set; }
@@ -20,6 +21,32 @@ namespace Courses.Model.Courses.Testings
         public List<Answer> Answers { get; set; } = new List<Answer>();
 
         public Question() { }
+
+
+        /// <summary>
+        /// Формирует название вопроса из порядкового номера вопроса в тесте
+        /// и текста содержания вопроса (если выставлен флажок ShowFullTitle)
+        /// </summary>
+        public string GetFullTitle()
+        {
+            if (ShowFullTitle)
+            {
+                return $"Вопрос {OrderInTesting}: {Title}";
+            }
+
+            return $"Вопрос {OrderInTesting}";
+        }
+
+        /// <summary>
+        /// Парсит содержимое вопроса чтобы извлечь первые 90 символов
+        /// </summary>
+        public string GetTitleFromContent(string? content)
+        {
+            // TODO: добавить в парсилку игнор тэгов
+            return content == null 
+                ? "" 
+                : content[0..Math.Min(content.Length, 90)];
+        }
 
         /// <summary>
         /// Добавляет вопросу 4 пустых ответа
