@@ -120,7 +120,7 @@ namespace Courses.Model.Courses
         {
             var testing = new Testing()
             {
-                Title = "Testing 1",
+                Title = "Тест 1: ",
                 NumberOfAttempts = 1000,
             };
 
