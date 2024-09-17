@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using HtmlAgilityPack;
+using System.ComponentModel.DataAnnotations;
 
 namespace Courses.Model.Courses.Testings
 {
@@ -38,14 +39,21 @@ namespace Courses.Model.Courses.Testings
         }
 
         /// <summary>
-        /// Парсит содержимое вопроса чтобы извлечь первые 90 символов
+        /// Парсит содержимое вопроса чтобы извлечь первые 90 символов.
+        /// Удаляет вёрстку, оставляя только чистый текст
         /// </summary>
         public string GetTitleFromContent(string? content)
         {
-            // TODO: добавить в парсилку игнор тэгов
-            return content == null 
-                ? "" 
-                : content[0..Math.Min(content.Length, 90)];
+            if (content == null)
+            {
+                return "";
+            }
+
+            HtmlDocument doc = new HtmlDocument();
+            doc.LoadHtml(content);
+            string innerText = doc.DocumentNode.InnerText;
+
+            return innerText.Length > 90 ? innerText.Substring(0, 90) : innerText;
         }
 
         /// <summary>
