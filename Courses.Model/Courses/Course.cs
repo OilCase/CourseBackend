@@ -241,7 +241,7 @@ namespace Courses.Model.Courses
         {
             var testing = new Testing()
             {
-                Title = "Входной тест: ",
+                Title = "Входной тест",
                 Category = EnumTestingCategory.Entrance,
                 NumberOfAttempts = 1,
             };
@@ -270,7 +270,7 @@ namespace Courses.Model.Courses
         {
             var testing = new Testing()
             {
-                Title = "Итоговый тест: ",
+                Title = "Итоговый тест",
                 Category = EnumTestingCategory.Final,
                 NumberOfAttempts = 1000
             };

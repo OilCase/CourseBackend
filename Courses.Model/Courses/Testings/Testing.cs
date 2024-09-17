@@ -15,8 +15,20 @@ namespace Courses.Model.Courses.Testings
         // Число попыток для выполнения конкретного теста, зависит от категории теста
         public int NumberOfAttempts { get; set; }
         public int? CutScorePercentages { get; set; } // Проходной балл
+        public int? ChapterId { get; set; }
+        public Chapter? Chapter { get; set; }
         public List<Question> Questions { get; set; } = new();
 
+        public string GetFullTitle()
+        {
+            if (Category == EnumTestingCategory.Basic)
+            {
+                var (partIndex, chapIndex) = Chapter!.GetIndexes();
+                return $"Тест {partIndex}.{chapIndex}: {Title}";
+            }
+
+            return $"{Title}";
+        }
 
         /// <summary>
         /// Вычисляет новые значения порядков

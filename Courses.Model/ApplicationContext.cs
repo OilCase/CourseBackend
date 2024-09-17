@@ -8,6 +8,7 @@ using Courses.Model.Users;
 using Courses.Model.Courses;
 using Courses.Model.Courses.Testings;
 using Courses.Model.Labels;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace Courses.Model
 {
@@ -129,6 +130,12 @@ namespace Courses.Model
             builder.Entity<Section>()
                 .HasOne(s => s.Chapter)
                 .WithMany(c => c.Sections)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            builder.Entity<Chapter>()
+                .HasOne(c => c.Testing)
+                .WithOne(t => t.Chapter)
+                .HasForeignKey<Testing>(t => t.ChapterId)
                 .OnDelete(DeleteBehavior.Cascade);
 
             builder.Entity<LocalizationValue>()
