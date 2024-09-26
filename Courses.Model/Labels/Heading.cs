@@ -4,7 +4,6 @@ using Microsoft.EntityFrameworkCore;
 namespace Courses.Model.Labels
 {
     [Index(nameof(Name), IsUnique = true)]
-    [Index(nameof(Description), IsUnique = true)]
     public class Heading // Разделы меток
     {
         [Key]
