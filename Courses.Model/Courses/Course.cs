@@ -31,6 +31,8 @@ namespace Courses.Model.Courses
         public EnumCourseType CourseType { get; set; }
         public EnumCourseStatus Status { get; set; } = EnumCourseStatus.InDevelopment;
 
+        public DateTime PublishedAt { get; set; }
+
         public string Title { get; set; }
         public string? Description { get; set; }
         public string? Authors { get; set; }
@@ -58,6 +60,13 @@ namespace Courses.Model.Courses
         public virtual ICollection<Part> Parts { get; set; } = new List<Part>();
         public virtual ICollection<Testing> Testings { get; set; } = new List<Testing>();
         public virtual ICollection<CourseChange> CourseChanges { get; set; } = new List<CourseChange>();
+
+        /// <summary>
+        /// Возвращает true, если курс был опубликован в течение двух месяцев
+        /// до текущего дня
+        /// </summary>
+        /// <returns></returns>
+        public bool IsNew() => (DateTime.UtcNow - PublishedAt).Days <= 60;
 
         /// <summary>
         /// Вычисляет новые значения порядков
