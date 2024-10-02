@@ -31,6 +31,43 @@ namespace Courses.Model.Courses.Testings
         }
 
         /// <summary>
+        /// Добавляет к тестированию пять дефолтных вопросов и по 4 ответа к каждому вопросу
+        /// </summary>
+        public void AddQuestions()
+        {
+            for (var i = 0; i < 5; i++)
+            {
+                var question = new Question()
+                {
+                    OrderInTesting = i + 1
+                };
+
+                if (Course == null)
+                {
+                    question.Content = new Content()
+                    {
+                        CourseId = CourseId
+                    };
+                }
+                else
+                {
+                    question.Content = new Content()
+                    {
+                        Course = Course
+                    };
+                }
+                question.Answers.AddRange(new List<Answer>
+                {
+                    new Answer(),
+                    new Answer(),
+                    new Answer(),
+                    new Answer()
+                });
+                Questions.Add(question);
+            }
+        }
+
+        /// <summary>
         /// Вычисляет новые значения порядков
         /// частей в курсе
         /// </summary>
