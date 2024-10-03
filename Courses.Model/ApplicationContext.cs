@@ -64,7 +64,7 @@ namespace Courses.Model
             builder.Entity<Language>().HasData(
                 new() { Id = "en", Name = "English" },
                 new() { Id = "ru", Name = "Русский" },
-                new() { Id = "test", Name = "Тестовский"}
+                new() { Id = "fr", Name = "Français" }
             );
 
             var shelfLocalization = new Localization() { Id = 1};

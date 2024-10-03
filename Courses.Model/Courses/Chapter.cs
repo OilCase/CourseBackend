@@ -120,38 +120,10 @@ namespace Courses.Model.Courses
         {
             var testing = new Testing()
             {
-                //Chapter = this,
+                Course = this.Course,
                 NumberOfAttempts = 1000,
             };
-
-            var question = new Question()
-            {
-                OrderInTesting = 1
-            };
-
-            if (course == null)
-            {
-                question.Content = new Content()
-                {
-                    CourseId = CourseId
-                };
-            }
-            else
-            {
-                question.Content = new Content()
-                {
-                    Course = course
-                };
-            }          
-            question.Answers.AddRange(new List<Answer>
-            {
-                new Answer(),
-                new Answer(),
-                new Answer(),
-                new Answer(),
-            });
-
-            testing.Questions.Add(question);
+            testing.AddQuestions();
             Testing = testing;
             Course.Testings.Add(testing);
         }

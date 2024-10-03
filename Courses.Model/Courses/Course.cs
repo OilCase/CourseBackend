@@ -274,28 +274,12 @@ namespace Courses.Model.Courses
         {
             var testing = new Testing()
             {
+                Course = this,
                 Title = "Входной тест",
                 Category = EnumTestingCategory.Entrance,
                 NumberOfAttempts = 1,
             };
-
-            var question = new Question()
-            {
-                OrderInTesting = 1,
-                Content = new Content()
-                {
-                    Course = this
-                }
-            };
-            question.Answers.AddRange(new List<Answer>
-            {
-                new Answer(),
-                new Answer(),
-                new Answer(),
-                new Answer()
-            });
-
-            testing.Questions.Add(question);
+            testing.AddQuestions();
             Testings.Add(testing);
         }
 
@@ -303,27 +287,13 @@ namespace Courses.Model.Courses
         {
             var testing = new Testing()
             {
+                Course = this,
                 Title = "Итоговый тест",
                 Category = EnumTestingCategory.Final,
                 NumberOfAttempts = 1000
             };
-            var question = new Question()
-            {
-                OrderInTesting = 1,
-                Content = new()
-                {
-                    Course = this
-                }
-            };
-            question.Answers.AddRange(new List<Answer>
-            {
-                new Answer(),
-                new Answer(),
-                new Answer(),
-                new Answer()
-            });
 
-            testing.Questions.Add(question);
+            testing.AddQuestions(); 
             Testings.Add(testing);
         }
 
