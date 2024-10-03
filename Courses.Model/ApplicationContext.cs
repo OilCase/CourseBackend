@@ -8,7 +8,6 @@ using Courses.Model.Users;
 using Courses.Model.Courses;
 using Courses.Model.Courses.Testings;
 using Courses.Model.Labels;
-using static System.Net.Mime.MediaTypeNames;
 
 namespace Courses.Model
 {
@@ -27,16 +26,7 @@ namespace Courses.Model
 
         public static DbContextOptions<ApplicationContext> GetOptions(string connectionString)
         {
-            switch (EnvironmentName)
-            {
-                case "Test":
-                {
-                    return new DbContextOptionsBuilder<ApplicationContext>()
-                        .UseInMemoryDatabase($"db_{new Random().NextInt64()}").Options;
-                }
-                default:
-                    return new DbContextOptionsBuilder<ApplicationContext>().UseNpgsql(connectionString).Options;
-            }
+            return new DbContextOptionsBuilder<ApplicationContext>().UseNpgsql(connectionString).Options;
         }
 
         protected override void OnModelCreating(ModelBuilder builder)

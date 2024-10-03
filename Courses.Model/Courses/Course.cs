@@ -62,6 +62,30 @@ namespace Courses.Model.Courses
         public virtual ICollection<CourseChange> CourseChanges { get; set; } = new List<CourseChange>();
 
         /// <summary>
+        /// Возвращает стоимость курса
+        /// </summary>
+        public int GetPrice()
+        {
+            if (IsFree)
+            {
+                return 0;
+            }
+
+            if (!IsPartialAvailable)
+            {
+                return (int)SaleableProduct!.PriceInRubles!;
+            }
+
+            var price = 0;
+            foreach (var chapter in Chapters)
+            {
+                price += (int)chapter.SaleableProduct!.PriceInRubles!;
+            }
+
+            return price;
+        }
+
+        /// <summary>
         /// Возвращает true, если курс был опубликован в течение двух месяцев
         /// до текущего дня
         /// </summary>
