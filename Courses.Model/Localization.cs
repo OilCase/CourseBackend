@@ -24,6 +24,14 @@ namespace Courses.Model
         }
 
         /// <summary>
+        /// Возвращает словарь локализованных имен направления
+        /// id языка: значение
+        /// </summary>
+        public Dictionary<string, string> ToDict() => this.Values
+            .Select(v => new { v.LanguageId, v.Value })
+            .ToDictionary(x => x.LanguageId, x => x.Value);
+
+        /// <summary>
         /// Добавляет LocalizationValues к 
         /// существующей Localization
         /// </summary>
