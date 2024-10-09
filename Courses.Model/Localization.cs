@@ -1,5 +1,7 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Microsoft.AspNetCore.Mvc;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using static Courses.Model.Localization;
 
 
 namespace Courses.Model
@@ -30,7 +32,7 @@ namespace Courses.Model
         public Dictionary<string, string> ToDict() => this.Values
             .Select(v => new { v.LanguageId, v.Value })
             .ToDictionary(x => x.LanguageId, x => x.Value);
-
+        
         /// <summary>
         /// Добавляет LocalizationValues к 
         /// существующей Localization
@@ -95,4 +97,37 @@ namespace Courses.Model
         public string LanguageId { get; set; }
         public Language? Language { get; set; }
     }
+
+    public static class LocalizationExtensions
+    {
+        /// <summary>
+        /// Проверяет, есть ли среди имеющихся локализаций
+        /// пересечения с переданными newLocalizations.
+        /// Если пересечения найдены - заполняет поле Message
+        /// строкой, аггрегирующей дубликаты
+        /// </summary>
+        public static LocalizationsValidationResult HaveDuplicates(this IEnumerable<Localization> existingLocalizations, IEnumerable<string> newLocalizations)
+        {
+            var result = new LocalizationsValidationResult
+            {
+                Valid = true,
+            };
+
+            var existingValues = existingLocalizations.SelectMany(l => l.Values.Select(v => v.Value)).ToArray();
+            var intersect = newLocalizations.Intersect(existingValues).ToArray();
+            if (intersect.Any())
+            {
+                result.Valid = false;
+                result.Message = string.Join(", ", intersect);
+            }
+
+            return result;
+        }
+    }
+
+    public class LocalizationsValidationResult
+    {
+        public bool Valid { get; set; }
+        public string Message { get; set; }
+    };
 }
