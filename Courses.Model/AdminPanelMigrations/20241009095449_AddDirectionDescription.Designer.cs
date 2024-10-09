@@ -12,7 +12,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Courses.Model.AdminPanelMigrations
 {
     [DbContext(typeof(ApplicationContext))]
-    [Migration("20241009050349_AddDirectionDescription")]
+    [Migration("20241009095449_AddDirectionDescription")]
     partial class AddDirectionDescription
     {
         /// <inheritdoc />
