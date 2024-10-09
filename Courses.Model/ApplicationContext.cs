@@ -94,22 +94,52 @@ namespace Courses.Model
             };
             builder.Entity<LocalizationValue>().HasData(drillingLocalizationValues);
 
+            var shelfDescription = new Localization() { Id = 4 };
+            builder.Entity<Localization>().HasData(shelfDescription);
+            var shelfDescriptionValues = new[]
+            {
+                new LocalizationValue() {Id = 7, LocalizationId = 4, LanguageId = "en", Value = "Shelf Description" },
+                new LocalizationValue() {Id = 8, LocalizationId = 4, LanguageId = "ru", Value = "шельфовое описание" }
+            };
+            builder.Entity<LocalizationValue>().HasData(shelfDescriptionValues);
+
+            var geologyDescription = new Localization() { Id = 5 };
+            builder.Entity<Localization>().HasData(geologyDescription);
+            var geologyDescriptionValues = new[]
+            {
+                new LocalizationValue() {Id = 9, LocalizationId = 5, LanguageId = "en", Value = "Geology Description" },
+                new LocalizationValue() {Id = 10, LocalizationId = 5, LanguageId = "ru", Value = "геологичное описание" }
+            };
+            builder.Entity<LocalizationValue>().HasData(geologyDescriptionValues);
+
+            var drillingDescription = new Localization() { Id = 6 };
+            builder.Entity<Localization>().HasData(drillingDescription);
+            var drillingDescriptionValues = new[]
+            {
+                new LocalizationValue() {Id = 11, LocalizationId = 6, LanguageId = "en", Value = "Drilling Description" },
+                new LocalizationValue() {Id = 12, LocalizationId = 6, LanguageId = "ru", Value = "бурительное описание" }
+            };
+            builder.Entity<LocalizationValue>().HasData(drillingDescriptionValues);
+
             builder.Entity<Direction>().HasData(
                 new()
                 {
                     Id = 1,
                     LocalizationId = 1,
+                    DescriptionId = 4,
                     IsVisible = true,
                 },
                 new()
                 {
                     Id = 2,
                     LocalizationId = 2,
+                    DescriptionId = 5,
                     IsVisible = true,
                 },
                 new()
                 {
                     Id = 3,
+                    DescriptionId = 6,
                     LocalizationId = 3,
                     IsVisible = true,
                 });

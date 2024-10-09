@@ -5,6 +5,8 @@
         public int Id { get; set; }
         public int LocalizationId { get; set; }
         public Localization Localization { get; set; }
+        public int DescriptionId { get; set; }
+        public Localization Description { get; set; }
         public bool IsVisible { get; set; } // видимость направления на сайте
         public DateTime LastChangeDateTime { get; set; }
     }
