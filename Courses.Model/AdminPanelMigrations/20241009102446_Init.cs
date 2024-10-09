@@ -9,7 +9,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Courses.Model.AdminPanelMigrations
 {
     /// <inheritdoc />
-    public partial class InitialCreate : Migration
+    public partial class Init : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -252,12 +252,19 @@ namespace Courses.Model.AdminPanelMigrations
                     Id = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     LocalizationId = table.Column<int>(type: "integer", nullable: false),
+                    DescriptionId = table.Column<int>(type: "integer", nullable: false),
                     IsVisible = table.Column<bool>(type: "boolean", nullable: false),
                     LastChangeDateTime = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Directions", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Directions_Localizations_DescriptionId",
+                        column: x => x.DescriptionId,
+                        principalTable: "Localizations",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_Directions_Localizations_LocalizationId",
                         column: x => x.LocalizationId,
@@ -333,6 +340,7 @@ namespace Courses.Model.AdminPanelMigrations
                     CourseFormat = table.Column<int>(type: "integer", nullable: false),
                     CourseType = table.Column<int>(type: "integer", nullable: false),
                     Status = table.Column<int>(type: "integer", nullable: false),
+                    PublishedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     Title = table.Column<string>(type: "text", nullable: false),
                     Description = table.Column<string>(type: "text", nullable: true),
                     Authors = table.Column<string>(type: "text", nullable: true),
@@ -461,36 +469,14 @@ namespace Courses.Model.AdminPanelMigrations
                     Id = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     CourseId = table.Column<int>(type: "integer", nullable: false),
-                    Title = table.Column<string>(type: "text", nullable: false)
+                    Title = table.Column<string>(type: "text", nullable: false),
+                    OrderInCourse = table.Column<int>(type: "integer", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Parts", x => x.Id);
                     table.ForeignKey(
                         name: "FK_Parts_Courses_CourseId",
-                        column: x => x.CourseId,
-                        principalTable: "Courses",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "Testings",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "integer", nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    Title = table.Column<string>(type: "text", nullable: true),
-                    CourseId = table.Column<int>(type: "integer", nullable: false),
-                    Category = table.Column<int>(type: "integer", nullable: false),
-                    NumberOfAttempts = table.Column<int>(type: "integer", nullable: false),
-                    CutScorePercentages = table.Column<int>(type: "integer", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Testings", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_Testings_Courses_CourseId",
                         column: x => x.CourseId,
                         principalTable: "Courses",
                         principalColumn: "Id",
@@ -559,7 +545,7 @@ namespace Courses.Model.AdminPanelMigrations
                     Title = table.Column<string>(type: "text", nullable: true),
                     SaleableProductId = table.Column<int>(type: "integer", nullable: true),
                     CourseId = table.Column<int>(type: "integer", nullable: false),
-                    TestingId = table.Column<int>(type: "integer", nullable: false)
+                    OrderInPart = table.Column<int>(type: "integer", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -581,10 +567,69 @@ namespace Courses.Model.AdminPanelMigrations
                         column: x => x.SaleableProductId,
                         principalTable: "SaleableProducts",
                         principalColumn: "Id");
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Sections",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    CourseId = table.Column<int>(type: "integer", nullable: false),
+                    ChapterId = table.Column<int>(type: "integer", nullable: false),
+                    Title = table.Column<string>(type: "text", nullable: true),
+                    OrderInChapter = table.Column<int>(type: "integer", nullable: false),
+                    ContentId = table.Column<int>(type: "integer", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Sections", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Chapters_Testings_TestingId",
-                        column: x => x.TestingId,
-                        principalTable: "Testings",
+                        name: "FK_Sections_Chapters_ChapterId",
+                        column: x => x.ChapterId,
+                        principalTable: "Chapters",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_Sections_Content_ContentId",
+                        column: x => x.ContentId,
+                        principalTable: "Content",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_Sections_Courses_CourseId",
+                        column: x => x.CourseId,
+                        principalTable: "Courses",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Testings",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    Title = table.Column<string>(type: "text", nullable: true),
+                    CourseId = table.Column<int>(type: "integer", nullable: false),
+                    Category = table.Column<int>(type: "integer", nullable: false),
+                    NumberOfAttempts = table.Column<int>(type: "integer", nullable: false),
+                    CutScorePercentages = table.Column<int>(type: "integer", nullable: true),
+                    ChapterId = table.Column<int>(type: "integer", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Testings", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Testings_Chapters_ChapterId",
+                        column: x => x.ChapterId,
+                        principalTable: "Chapters",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_Testings_Courses_CourseId",
+                        column: x => x.CourseId,
+                        principalTable: "Courses",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -596,8 +641,11 @@ namespace Courses.Model.AdminPanelMigrations
                     Id = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     TestingId = table.Column<int>(type: "integer", nullable: false),
+                    Title = table.Column<string>(type: "text", nullable: false),
                     DirectionId = table.Column<int>(type: "integer", nullable: true),
                     CompetenceId = table.Column<string>(type: "text", nullable: true),
+                    OrderInTesting = table.Column<int>(type: "integer", nullable: false),
+                    ShowFullTitle = table.Column<bool>(type: "boolean", nullable: false),
                     CorrectAnswerScore = table.Column<int>(type: "integer", nullable: false),
                     ContentId = table.Column<int>(type: "integer", nullable: false)
                 },
@@ -657,40 +705,6 @@ namespace Courses.Model.AdminPanelMigrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Sections",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "integer", nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    CourseId = table.Column<int>(type: "integer", nullable: false),
-                    ChapterId = table.Column<int>(type: "integer", nullable: false),
-                    Title = table.Column<string>(type: "text", nullable: true),
-                    ContentId = table.Column<int>(type: "integer", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Sections", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_Sections_Chapters_ChapterId",
-                        column: x => x.ChapterId,
-                        principalTable: "Chapters",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_Sections_Content_ContentId",
-                        column: x => x.ContentId,
-                        principalTable: "Content",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_Sections_Courses_CourseId",
-                        column: x => x.CourseId,
-                        principalTable: "Courses",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "Answers",
                 columns: table => new
                 {
@@ -744,24 +758,13 @@ namespace Courses.Model.AdminPanelMigrations
                 });
 
             migrationBuilder.InsertData(
-                table: "AspNetRoles",
-                columns: new[] { "Id", "ConcurrencyStamp", "Name", "NormalizedName" },
-                values: new object[,]
-                {
-                    { "007a05d8-e2b6-4838-8415-4a8e1164a569", null, "Author", "AUTHOR" },
-                    { "6841bfac-9480-45ae-8a56-2fe7cf4eb639", null, "Admin", "ADMIN" },
-                    { "bc11c2a2-b755-45b7-9764-1dfa8b942c26", null, "value__", "VALUE__" },
-                    { "e3c1e619-7b2b-460d-ab1a-598bd995b5a8", null, "Regular", "REGULAR" }
-                });
-
-            migrationBuilder.InsertData(
                 table: "Languages",
                 columns: new[] { "Id", "Name" },
                 values: new object[,]
                 {
                     { "en", "English" },
-                    { "ru", "Русский" },
-                    { "test", "Тестовский" }
+                    { "fr", "Français" },
+                    { "ru", "Русский" }
                 });
 
             migrationBuilder.InsertData(
@@ -771,17 +774,20 @@ namespace Courses.Model.AdminPanelMigrations
                 {
                     1,
                     2,
-                    3
+                    3,
+                    4,
+                    5,
+                    6
                 });
 
             migrationBuilder.InsertData(
                 table: "Directions",
-                columns: new[] { "Id", "IsVisible", "LastChangeDateTime", "LocalizationId" },
+                columns: new[] { "Id", "DescriptionId", "IsVisible", "LastChangeDateTime", "LocalizationId" },
                 values: new object[,]
                 {
-                    { 1, true, new DateTime(2024, 9, 2, 9, 47, 48, 624, DateTimeKind.Utc).AddTicks(3416), 1 },
-                    { 2, true, new DateTime(2024, 9, 2, 9, 47, 48, 624, DateTimeKind.Utc).AddTicks(3419), 2 },
-                    { 3, true, new DateTime(2024, 9, 2, 9, 47, 48, 624, DateTimeKind.Utc).AddTicks(3420), 3 }
+                    { 1, 4, true, new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), 1 },
+                    { 2, 5, true, new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), 2 },
+                    { 3, 6, true, new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), 3 }
                 });
 
             migrationBuilder.InsertData(
@@ -794,7 +800,13 @@ namespace Courses.Model.AdminPanelMigrations
                     { 3, "en", 2, "geology" },
                     { 4, "ru", 2, "геология" },
                     { 5, "en", 3, "drilling" },
-                    { 6, "ru", 3, "бурение" }
+                    { 6, "ru", 3, "бурение" },
+                    { 7, "en", 4, "Shelf Description" },
+                    { 8, "ru", 4, "шельфовое описание" },
+                    { 9, "en", 5, "Geology Description" },
+                    { 10, "ru", 5, "геологичное описание" },
+                    { 11, "en", 6, "Drilling Description" },
+                    { 12, "ru", 6, "бурительное описание" }
                 });
 
             migrationBuilder.CreateIndex(
@@ -855,11 +867,6 @@ namespace Courses.Model.AdminPanelMigrations
                 column: "SaleableProductId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Chapters_TestingId",
-                table: "Chapters",
-                column: "TestingId");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_Content_CourseId",
                 table: "Content",
                 column: "CourseId");
@@ -901,6 +908,11 @@ namespace Courses.Model.AdminPanelMigrations
                 column: "SaleableProductId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_Directions_DescriptionId",
+                table: "Directions",
+                column: "DescriptionId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Directions_LocalizationId",
                 table: "Directions",
                 column: "LocalizationId");
@@ -914,12 +926,6 @@ namespace Courses.Model.AdminPanelMigrations
                 name: "IX_FinalPages_CourseId",
                 table: "FinalPages",
                 column: "CourseId",
-                unique: true);
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Headings_Description",
-                table: "Headings",
-                column: "Description",
                 unique: true);
 
             migrationBuilder.CreateIndex(
@@ -1015,6 +1021,12 @@ namespace Courses.Model.AdminPanelMigrations
                 column: "TestingSessionId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_Testings_ChapterId",
+                table: "Testings",
+                column: "ChapterId",
+                unique: true);
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Testings_CourseId",
                 table: "Testings",
                 column: "CourseId");
@@ -1090,16 +1102,10 @@ namespace Courses.Model.AdminPanelMigrations
                 name: "Headings");
 
             migrationBuilder.DropTable(
-                name: "Chapters");
-
-            migrationBuilder.DropTable(
                 name: "Answers");
 
             migrationBuilder.DropTable(
                 name: "TestingSessions");
-
-            migrationBuilder.DropTable(
-                name: "Parts");
 
             migrationBuilder.DropTable(
                 name: "Questions");
@@ -1121,6 +1127,12 @@ namespace Courses.Model.AdminPanelMigrations
 
             migrationBuilder.DropTable(
                 name: "Localizations");
+
+            migrationBuilder.DropTable(
+                name: "Chapters");
+
+            migrationBuilder.DropTable(
+                name: "Parts");
 
             migrationBuilder.DropTable(
                 name: "Courses");

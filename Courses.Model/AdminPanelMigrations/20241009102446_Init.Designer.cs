@@ -12,15 +12,15 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Courses.Model.AdminPanelMigrations
 {
     [DbContext(typeof(ApplicationContext))]
-    [Migration("20240917083813_AddChapterToTestings")]
-    partial class AddChapterToTestings
+    [Migration("20241009102446_Init")]
+    partial class Init
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "8.0.8")
+                .HasAnnotation("ProductVersion", "8.0.10")
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
@@ -128,6 +128,9 @@ namespace Courses.Model.AdminPanelMigrations
                         .IsRequired()
                         .HasColumnType("text");
 
+                    b.Property<DateTime>("PublishedAt")
+                        .HasColumnType("timestamp with time zone");
+
                     b.Property<int?>("SaleableProductId")
                         .HasColumnType("integer");
 
@@ -234,6 +237,9 @@ namespace Courses.Model.AdminPanelMigrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
+                    b.Property<int>("DescriptionId")
+                        .HasColumnType("integer");
+
                     b.Property<bool>("IsVisible")
                         .HasColumnType("boolean");
 
@@ -245,6 +251,8 @@ namespace Courses.Model.AdminPanelMigrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("DescriptionId");
+
                     b.HasIndex("LocalizationId");
 
                     b.ToTable("Directions");
@@ -253,6 +261,7 @@ namespace Courses.Model.AdminPanelMigrations
                         new
                         {
                             Id = 1,
+                            DescriptionId = 4,
                             IsVisible = true,
                             LastChangeDateTime = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             LocalizationId = 1
@@ -260,6 +269,7 @@ namespace Courses.Model.AdminPanelMigrations
                         new
                         {
                             Id = 2,
+                            DescriptionId = 5,
                             IsVisible = true,
                             LastChangeDateTime = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             LocalizationId = 2
@@ -267,6 +277,7 @@ namespace Courses.Model.AdminPanelMigrations
                         new
                         {
                             Id = 3,
+                            DescriptionId = 6,
                             IsVisible = true,
                             LastChangeDateTime = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             LocalizationId = 3
@@ -534,9 +545,6 @@ namespace Courses.Model.AdminPanelMigrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("Description")
-                        .IsUnique();
-
                     b.HasIndex("Name")
                         .IsUnique();
 
@@ -596,8 +604,8 @@ namespace Courses.Model.AdminPanelMigrations
                         },
                         new
                         {
-                            Id = "test",
-                            Name = "Тестовский"
+                            Id = "fr",
+                            Name = "Français"
                         });
                 });
 
@@ -625,6 +633,18 @@ namespace Courses.Model.AdminPanelMigrations
                         new
                         {
                             Id = 3
+                        },
+                        new
+                        {
+                            Id = 4
+                        },
+                        new
+                        {
+                            Id = 5
+                        },
+                        new
+                        {
+                            Id = 6
                         });
                 });
 
@@ -697,6 +717,48 @@ namespace Courses.Model.AdminPanelMigrations
                             LanguageId = "ru",
                             LocalizationId = 3,
                             Value = "бурение"
+                        },
+                        new
+                        {
+                            Id = 7,
+                            LanguageId = "en",
+                            LocalizationId = 4,
+                            Value = "Shelf Description"
+                        },
+                        new
+                        {
+                            Id = 8,
+                            LanguageId = "ru",
+                            LocalizationId = 4,
+                            Value = "шельфовое описание"
+                        },
+                        new
+                        {
+                            Id = 9,
+                            LanguageId = "en",
+                            LocalizationId = 5,
+                            Value = "Geology Description"
+                        },
+                        new
+                        {
+                            Id = 10,
+                            LanguageId = "ru",
+                            LocalizationId = 5,
+                            Value = "геологичное описание"
+                        },
+                        new
+                        {
+                            Id = 11,
+                            LanguageId = "en",
+                            LocalizationId = 6,
+                            Value = "Drilling Description"
+                        },
+                        new
+                        {
+                            Id = 12,
+                            LanguageId = "ru",
+                            LocalizationId = 6,
+                            Value = "бурительное описание"
                         });
                 });
 
@@ -1092,11 +1154,19 @@ namespace Courses.Model.AdminPanelMigrations
 
             modelBuilder.Entity("Courses.Model.Courses.Direction", b =>
                 {
+                    b.HasOne("Courses.Model.Localization", "Description")
+                        .WithMany()
+                        .HasForeignKey("DescriptionId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.HasOne("Courses.Model.Localization", "Localization")
                         .WithMany()
                         .HasForeignKey("LocalizationId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("Description");
 
                     b.Navigation("Localization");
                 });
