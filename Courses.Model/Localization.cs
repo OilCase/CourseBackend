@@ -101,33 +101,14 @@ namespace Courses.Model
     public static class LocalizationExtensions
     {
         /// <summary>
-        /// Проверяет, есть ли среди имеющихся локализаций
-        /// пересечения с переданными newLocalizations.
-        /// Если пересечения найдены - заполняет поле Message
-        /// строкой, аггрегирующей дубликаты
+        /// Возвращает пересечения существующих локализаций с
+        /// newLocalizations
         /// </summary>
-        public static LocalizationsValidationResult HaveDuplicates(this IEnumerable<Localization> existingLocalizations, IEnumerable<string> newLocalizations)
+        public static string[] HaveDuplicates(this IEnumerable<Localization> existingLocalizations, IEnumerable<string> newLocalizations)
         {
-            var result = new LocalizationsValidationResult
-            {
-                Valid = true,
-            };
-
             var existingValues = existingLocalizations.SelectMany(l => l.Values.Select(v => v.Value)).ToArray();
             var intersect = newLocalizations.Intersect(existingValues).ToArray();
-            if (intersect.Any())
-            {
-                result.Valid = false;
-                result.Message = string.Join(", ", intersect);
-            }
-
-            return result;
+            return intersect;
         }
     }
-
-    public class LocalizationsValidationResult
-    {
-        public bool Valid { get; set; }
-        public string Message { get; set; }
-    };
 }
