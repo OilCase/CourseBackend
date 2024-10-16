@@ -10,7 +10,7 @@ namespace Courses.Util;
 
 public interface IJwtGenerator
 {
-    public string CreateToken(string userName, string[]? roles = null, string? modelCase = null);
+    public string CreateToken(string userName, string[]? roles = null, string? modelCase = null, string? userId = null);
 }
 
 public class JwtGenerator : IJwtGenerator
@@ -23,7 +23,7 @@ public class JwtGenerator : IJwtGenerator
     }
 
 
-    public string CreateToken(string userName, string[]? roles = null, string? modelCase = null)
+    public string CreateToken(string userName, string[]? roles = null, string? modelCase = null, string? userId = null)
     {
         var claims = new List<Claim>
         {
@@ -33,6 +33,11 @@ public class JwtGenerator : IJwtGenerator
 
         if ((roles ?? Array.Empty<string>()).Any())
             claims.AddRange(roles!.Select(role => new Claim(ClaimTypes.Role, role)));
+
+        if (!string.IsNullOrEmpty(userId))
+        {
+            claims.Add(new Claim("UserId", userId));
+        }
 
         var credentials = new SigningCredentials(GetSymmetricSecurityKey(), SecurityAlgorithms.HmacSha512Signature);
         var tokenDescriptor = new SecurityTokenDescriptor()
