@@ -60,6 +60,10 @@ namespace Courses.Model
             builder.Entity<Course>()
                 .HasIndex(c => c.Title)
                 .IsUnique();
+
+            builder.Entity<Label>()
+                .HasIndex(c => c.Name)
+                .IsUnique();
         }
 
         public static void PrePopulateDatabase(ModelBuilder builder)
