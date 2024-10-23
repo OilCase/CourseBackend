@@ -18,7 +18,6 @@ namespace Courses.Model
 
         public ApplicationContext(DbContextOptions options) : base(options)
         {
-            //Database.EnsureDeleted();
             //Database.EnsureCreated();
             Debug.WriteLine(Database.ProviderName);
             Debug.WriteLine(Database.GetConnectionString());
@@ -56,6 +55,10 @@ namespace Courses.Model
         {
             builder.Entity<CourseAuthor>()
                 .HasIndex(e => new { e.UserId, e.CourseId})
+                .IsUnique();
+
+            builder.Entity<Course>()
+                .HasIndex(c => c.Title)
                 .IsUnique();
         }
 
