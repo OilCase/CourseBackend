@@ -1,5 +1,5 @@
-﻿using System.Runtime.Serialization;
-
+﻿using System.ComponentModel.DataAnnotations.Schema;
+using System.Runtime.Serialization;
 using Courses.Model.Courses.Testings;
 
 
@@ -13,6 +13,8 @@ namespace Courses.Model.Courses
 
     public class Course
     {
+        [NotMapped] public int CoursePurchasedLifetimeDays => 365;
+
         public int Id { get; set; }
         public bool IsPartialAvailable { get; set; }
 
@@ -36,11 +38,20 @@ namespace Courses.Model.Courses
         public string Title { get; set; }
         public string? Description { get; set; }
         public string? Authors { get; set; }
+
+        /// <summary>Часть описания курса, для кого этот курс составлен, его целевая аудитория</summary>
         public string? TargetAudience { get; set; }
+
+        /// <summary>Методика обучения, какие инструменты и методики использует прподаватель в своём курсе</summary>
         public string? EducationMethods { get; set; }
+
+        /// <summary>Какие навыки получат студенты успешно прошедшие курс</summary>
         public string? EducationResults { get; set; }
 
+        /// <summary>Дата снятия с ветрины</summary>
         public DateTime? SalesTerminationDate { get; set; }
+
+        public DateTime? AccessFinishDate => SalesTerminationDate?.AddDays(CoursePurchasedLifetimeDays);
 
         public int? DurationAcademicHours { get; set; }
 
@@ -159,11 +170,11 @@ namespace Courses.Model.Courses
         public bool InformationFilled()
         {
             if (string.IsNullOrEmpty(Title)
-             || string.IsNullOrEmpty(Authors)
-             || string.IsNullOrEmpty(Description)
-             || string.IsNullOrEmpty(TargetAudience)
-             || string.IsNullOrEmpty(EducationMethods)
-             || string.IsNullOrEmpty(EducationResults))
+                || string.IsNullOrEmpty(Authors)
+                || string.IsNullOrEmpty(Description)
+                || string.IsNullOrEmpty(TargetAudience)
+                || string.IsNullOrEmpty(EducationMethods)
+                || string.IsNullOrEmpty(EducationResults))
             {
                 return false;
             }
@@ -201,7 +212,8 @@ namespace Courses.Model.Courses
 
             if (IsPartialAvailable && SaleableProduct != null)
             {
-                exceptions.Add(new ArgumentException("Стоимость частичного курса определяется по стоимости его содержимого"));
+                exceptions.Add(
+                    new ArgumentException("Стоимость частичного курса определяется по стоимости его содержимого"));
             }
 
             if (exceptions.Any())
@@ -221,17 +233,20 @@ namespace Courses.Model.Courses
         {
             if (DurationWorkDays == null)
             {
-                exceptions.Add(new ArgumentNullException($"Значение свойства {nameof(DurationWorkDays)} для синхронного курса должно быть задано"));
+                exceptions.Add(new ArgumentNullException(
+                    $"Значение свойства {nameof(DurationWorkDays)} для синхронного курса должно быть задано"));
             }
 
             if (DateStart == null)
             {
-                exceptions.Add(new ArgumentNullException($"Значение свойства {nameof(DateStart)} для синхронного курса должно быть задано"));
+                exceptions.Add(new ArgumentNullException(
+                    $"Значение свойства {nameof(DateStart)} для синхронного курса должно быть задано"));
             }
 
             if (DateFinish == null)
             {
-                exceptions.Add(new ArgumentNullException($"Значение свойства {nameof(DateFinish)} для синхронного курса должно быть задано"));
+                exceptions.Add(new ArgumentNullException(
+                    $"Значение свойства {nameof(DateFinish)} для синхронного курса должно быть задано"));
             }
 
             if (DateFinish <= DateStart)
@@ -256,17 +271,20 @@ namespace Courses.Model.Courses
         {
             if (DurationWorkDays != null)
             {
-                exceptions.Add(new ArgumentException($"Значение свойства {nameof(DurationWorkDays)} для асинхронного курса не может быть задано"));
+                exceptions.Add(new ArgumentException(
+                    $"Значение свойства {nameof(DurationWorkDays)} для асинхронного курса не может быть задано"));
             }
 
             if (DateStart != null)
             {
-                exceptions.Add(new ArgumentException($"Значение свойства {nameof(DateStart)} для асинхронного курса не может быть задано"));
+                exceptions.Add(new ArgumentException(
+                    $"Значение свойства {nameof(DateStart)} для асинхронного курса не может быть задано"));
             }
 
             if (DateFinish != null)
             {
-                exceptions.Add(new ArgumentException($"Значение свойства {nameof(DateFinish)} для асинхронного курса не может быть задано"));
+                exceptions.Add(new ArgumentException(
+                    $"Значение свойства {nameof(DateFinish)} для асинхронного курса не может быть задано"));
             }
         }
 
@@ -293,7 +311,7 @@ namespace Courses.Model.Courses
                 NumberOfAttempts = 1000
             };
 
-            testing.AddQuestions(); 
+            testing.AddQuestions();
             Testings.Add(testing);
         }
 
@@ -309,18 +327,18 @@ namespace Courses.Model.Courses
             bool isSaleable = !IsFree && !IsPartialAvailable;
             if (isSaleable)
             {
-                SaleableProduct = new SaleableProduct()
+                SaleableProduct = new()
                 {
                     PriceInRubles = 0.0,
                 };
             }
-            
-            Section section = new Section(this)
+
+            Section section = new(this)
             {
                 OrderInChapter = 1
             };
 
-            Chapter chapter = new Chapter()
+            Chapter chapter = new()
             {
                 Course = this,
                 OrderInPart = 1
@@ -332,10 +350,11 @@ namespace Courses.Model.Courses
                     PriceInRubles = Chapter.DefaultPriceInRubles
                 };
             }
+
             chapter.AddTesting(this);
             chapter.Sections.Add(section);
 
-            Part part = new Part()
+            Part part = new()
             {
                 OrderInCourse = 1
             };
@@ -345,13 +364,13 @@ namespace Courses.Model.Courses
             AddEntranceTest();
             AddFinalTest();
 
-            InitialPage = new InitialPage()
+            InitialPage = new()
             {
                 Course = this,
             };
             InitialPage.Content.Course = this;
 
-            FinalPage = new FinalPage()
+            FinalPage = new()
             {
                 Course = this,
             };
@@ -367,7 +386,10 @@ namespace Courses.Model.Courses
 
     public enum EnumCourseType
     {
+        /// <summary>Курс проводится по расписанию</summary>
         [EnumMember(Value = "Synchronous")] Synchronous = 1,
+
+        /// <summary>Доступ к материалам курса предоставлен сразу в полном объёму</summary>
         [EnumMember(Value = "Asynchronous")] Asynchronous = 2
     }
 
@@ -375,8 +397,8 @@ namespace Courses.Model.Courses
     {
         [EnumMember(Value = "InDevelopment")] InDevelopment = 1, // В разработке
         [EnumMember(Value = "OnModeration")] OnModeration = 2, // На модерации
-        [EnumMember(Value = "Published")] Published = 3,       // Опубликован 
-        [EnumMember(Value = "Withdrawn")] Withdrawn = 4,       // Снят с витрины (регулируется job'ом в бд)
-        [EnumMember(Value = "Archived")] Archived = 5,         // Архивирован (регулируется job'ом в бд)
+        [EnumMember(Value = "Published")] Published = 3, // Опубликован 
+        [EnumMember(Value = "Withdrawn")] Withdrawn = 4, // Снят с витрины (регулируется job'ом в бд)
+        [EnumMember(Value = "Archived")] Archived = 5, // Архивирован (регулируется job'ом в бд)
     }
 }

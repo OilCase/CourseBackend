@@ -99,9 +99,19 @@ namespace Courses.Model.Courses
                     PriceInRubles = Chapter.DefaultPriceInRubles
                 };
             }
+
             chapter.AddSection();
             chapter.AddTesting();
             Chapters.Add(chapter);
+        }
+
+        public double GetPrice()
+        {
+            return Chapters
+                .Where(ch => ch.SaleableProductId != null)
+                .Sum(ch =>
+                ch.SaleableProduct?.PriceInRubles ??
+                throw new ArgumentException("Не загружены главы или цены (SaleableProduct)"));
         }
     }
 }

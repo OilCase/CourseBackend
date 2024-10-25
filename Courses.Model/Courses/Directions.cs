@@ -9,6 +9,11 @@
         public Localization Description { get; set; }
         public bool IsVisible { get; set; } // видимость направления на сайте
         public DateTime LastChangeDateTime { get; set; }
+
+        public string GetDirectionName(string language)
+        {
+            return Localization[language] ?? throw new ArgumentException("Не загружена локализация");
+        }
     }
 
     public class CourseDirection
