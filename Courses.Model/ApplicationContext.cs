@@ -251,11 +251,12 @@ namespace Courses.Model
                 .Select(e => e.Entity)
                 .OfType<Content>();
 
-            foreach (var deletedContent in deletedContentList)
-            {
-                var path = deletedContent.GetContentDirectoryPath();
-                DeleteDirectory(path);
-            }
+            // 29.10.2024
+            //foreach (var deletedContent in deletedContentList)
+            //{
+            //    var path = deletedContent.GetContentDirectoryPath();
+            //    DeleteDirectory(path);
+            //}
         }
 
         /// <summary>
