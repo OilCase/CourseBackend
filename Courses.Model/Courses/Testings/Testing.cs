@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System.Collections.Generic;
+using System.IO;
 using System.Runtime.Serialization;
 
 
@@ -56,13 +57,8 @@ namespace Courses.Model.Courses.Testings
                         Course = Course
                     };
                 }
-                question.Answers.AddRange(new List<Answer>
-                {
-                    new Answer(),
-                    new Answer(),
-                    new Answer(),
-                    new Answer()
-                });
+
+                question.Answers.AddRange(Enumerable.Range(0, 4).Select(_ => new Answer()));
                 Questions.Add(question);
             }
         }

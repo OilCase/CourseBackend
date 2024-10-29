@@ -1,6 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
 using System.Runtime.Serialization;
 using Courses.Model.Courses.Testings;
+using static Courses.Model.Courses.Testings.EnumTestingCategory;
 
 
 namespace Courses.Model.Courses
@@ -9,6 +10,30 @@ namespace Courses.Model.Courses
     {
         [EnumMember(Value = "Up")] Up = 1,
         [EnumMember(Value = "Down")] Down = 2
+    }
+
+    public enum EnumCourseFormat
+    {
+        [EnumMember(Value = "Offline")] Offline = 1,
+        [EnumMember(Value = "Online")] Online = 2
+    }
+
+    public enum EnumCourseType
+    {
+        /// <summary>Курс проводится по расписанию</summary>
+        [EnumMember(Value = "Synchronous")] Synchronous = 1,
+
+        /// <summary>Доступ к материалам курса предоставлен сразу в полном объёму</summary>
+        [EnumMember(Value = "Asynchronous")] Asynchronous = 2
+    }
+
+    public enum EnumCourseStatus
+    {
+        [EnumMember(Value = "InDevelopment")] InDevelopment = 1, // В разработке
+        [EnumMember(Value = "OnModeration")] OnModeration = 2, // На модерации
+        [EnumMember(Value = "Published")] Published = 3, // Опубликован 
+        [EnumMember(Value = "Withdrawn")] Withdrawn = 4, // Снят с витрины (регулируется job'ом в бд)
+        [EnumMember(Value = "Archived")] Archived = 5, // Архивирован (регулируется job'ом в бд)
     }
 
     public class Course
@@ -294,12 +319,16 @@ namespace Courses.Model.Courses
             {
                 Course = this,
                 Title = "Входной тест",
-                Category = EnumTestingCategory.Entrance,
+                Category = Entrance,
                 NumberOfAttempts = 1,
             };
             testing.AddQuestions();
             Testings.Add(testing);
         }
+
+        public Testing? GetEntranceTest()
+            => Testings.FirstOrDefault(t => t.Category == Entrance);
+
 
         public void AddFinalTest()
         {
@@ -307,13 +336,16 @@ namespace Courses.Model.Courses
             {
                 Course = this,
                 Title = "Итоговый тест",
-                Category = EnumTestingCategory.Final,
+                Category = Final,
                 NumberOfAttempts = 1000
             };
 
             testing.AddQuestions();
             Testings.Add(testing);
         }
+
+        public Testing? GetFinalTest()
+            => Testings.FirstOrDefault(t => t.Category == Final);
 
         /// <summary>
         /// Добавляет к курсу минимальный набор
@@ -376,29 +408,5 @@ namespace Courses.Model.Courses
             };
             FinalPage.Content.Course = this;
         }
-    }
-
-    public enum EnumCourseFormat
-    {
-        [EnumMember(Value = "Offline")] Offline = 1,
-        [EnumMember(Value = "Online")] Online = 2
-    }
-
-    public enum EnumCourseType
-    {
-        /// <summary>Курс проводится по расписанию</summary>
-        [EnumMember(Value = "Synchronous")] Synchronous = 1,
-
-        /// <summary>Доступ к материалам курса предоставлен сразу в полном объёму</summary>
-        [EnumMember(Value = "Asynchronous")] Asynchronous = 2
-    }
-
-    public enum EnumCourseStatus
-    {
-        [EnumMember(Value = "InDevelopment")] InDevelopment = 1, // В разработке
-        [EnumMember(Value = "OnModeration")] OnModeration = 2, // На модерации
-        [EnumMember(Value = "Published")] Published = 3, // Опубликован 
-        [EnumMember(Value = "Withdrawn")] Withdrawn = 4, // Снят с витрины (регулируется job'ом в бд)
-        [EnumMember(Value = "Archived")] Archived = 5, // Архивирован (регулируется job'ом в бд)
     }
 }
