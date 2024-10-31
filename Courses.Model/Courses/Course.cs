@@ -408,9 +408,5 @@ namespace Courses.Model.Courses
             FinalPage.Content.Course = this;
         }
 
-        public bool FinalPageIsAvailable()
-        {
-            throw new NotImplementedException();
-        }
     }
 }
