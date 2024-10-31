@@ -238,26 +238,6 @@ namespace Courses.Model
             RemoveRange(contentForDelete);
         }
 
-        ///// <summary>
-        ///// Обеспечивает удаление директорий
-        ///// содержимого на сервере вместе с
-        ///// удалением сущности содержимого из бд
-        ///// </summary>
-        //private void DeleteRemovedContentDirectories()
-        //{
-        //    var deletedContentList = ChangeTracker
-        //        .Entries()
-        //        .Where(e => e.State == EntityState.Deleted)
-        //        .Select(e => e.Entity)
-        //        .OfType<Content>();
-
-        //    foreach (var deletedContent in deletedContentList)
-        //    {
-        //        var path = deletedContent.GetContentDirectoryPath();
-        //        DeleteDirectory(path);
-        //    }
-        //}
-
         /// <summary>
         /// Удаляет директорию если она существует
         /// по переданному пути. 

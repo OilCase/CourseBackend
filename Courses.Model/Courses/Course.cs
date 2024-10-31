@@ -329,7 +329,6 @@ namespace Courses.Model.Courses
         public Testing? GetEntranceTest()
             => Testings.FirstOrDefault(t => t.Category == Entrance);
 
-
         public void AddFinalTest()
         {
             var testing = new Testing()
@@ -407,6 +406,11 @@ namespace Courses.Model.Courses
                 Course = this,
             };
             FinalPage.Content.Course = this;
+        }
+
+        public bool FinalPageIsAvailable()
+        {
+            throw new NotImplementedException();
         }
     }
 }
