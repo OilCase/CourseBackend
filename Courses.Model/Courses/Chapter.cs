@@ -8,8 +8,10 @@ namespace Courses.Model.Courses
         public const double DefaultPriceInRubles = 1000.0;
 
         public int Id { get; set; }
+        
         public int PartId { get; set; }
         public Part? Part { get; set; } = null;
+
         [MaxLength(4096)] public string Title { get; set; } = "";
         public int? SaleableProductId { get; set; }
         public SaleableProduct? SaleableProduct { get; set; }
