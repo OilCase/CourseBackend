@@ -47,7 +47,7 @@ namespace Courses.Model
             RemoveContentWith<Question>();
             RemoveContentWith<Section>();
             RemoveContentWith<Page>();
-            DeleteRemovedContentDirectories();
+            //DeleteRemovedContentDirectories();
             return base.SaveChanges();
         }
 
@@ -236,27 +236,6 @@ namespace Courses.Model
                 .ToList();
 
             RemoveRange(contentForDelete);
-        }
-
-        /// <summary>
-        /// Обеспечивает удаление директорий
-        /// содержимого на сервере вместе с
-        /// удалением сущности содержимого из бд
-        /// </summary>
-        private void DeleteRemovedContentDirectories()
-        {
-            var deletedContentList = ChangeTracker
-                .Entries()
-                .Where(e => e.State == EntityState.Deleted)
-                .Select(e => e.Entity)
-                .OfType<Content>();
-
-            // 29.10.2024
-            //foreach (var deletedContent in deletedContentList)
-            //{
-            //    var path = deletedContent.GetContentDirectoryPath();
-            //    DeleteDirectory(path);
-            //}
         }
 
         /// <summary>
