@@ -346,6 +346,9 @@ namespace Courses.Model.Courses
         public Testing? GetFinalTest()
             => Testings.FirstOrDefault(t => t.Category == Final);
 
+        /// <summary> Возвращает массив тестов базовой категории </summary>
+        public Testing[] GetBasicTestings() => Testings.Where(t => t.Category == Basic).ToArray();
+
         /// <summary>
         /// Добавляет к курсу минимальный набор
         /// компонентов:
