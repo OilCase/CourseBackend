@@ -89,13 +89,13 @@ namespace Courses.Model.Courses
         // Дата завершения существует только для синхронных курсов
         public DateTime? DateFinish { get; set; }
 
-        public virtual ICollection<CourseAuthor> CourseAuthors { get; set; } = new List<CourseAuthor>();
-        public virtual ICollection<CourseDirection> CourseDirections { get; set; } = new List<CourseDirection>();
-        public virtual ICollection<Section> Sections { get; set; } = new List<Section>();
-        public virtual ICollection<Chapter> Chapters { get; set; } = new List<Chapter>();
-        public virtual ICollection<Part> Parts { get; set; } = new List<Part>();
-        public virtual ICollection<Testing> Testings { get; set; } = new List<Testing>();
-        public virtual ICollection<CourseChange> CourseChanges { get; set; } = new List<CourseChange>();
+        public List<CourseAuthor> CourseAuthors { get; set; } = new List<CourseAuthor>();
+        public List<CourseDirection> CourseDirections { get; set; } = new List<CourseDirection>();
+        public List<Section> Sections { get; set; } = new List<Section>();
+        public List<Chapter> Chapters { get; set; } = new List<Chapter>();
+        public List<Part> Parts { get; set; } = new List<Part>();
+        public List<Testing> Testings { get; set; } = new List<Testing>();
+        public List<CourseChange> CourseChanges { get; set; } = new List<CourseChange>();
 
         /// <summary>
         /// Возвращает стоимость курса
