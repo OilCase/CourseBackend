@@ -52,8 +52,9 @@ namespace Courses.Model.Courses.Testings
             HtmlDocument doc = new HtmlDocument();
             doc.LoadHtml(content);
             string innerText = doc.DocumentNode.InnerText;
+            string resultString = HtmlEntity.DeEntitize(innerText).Trim();
 
-            return innerText.Length > 90 ? innerText.Substring(0, 90) : innerText;
+            return resultString.Length > 90 ? resultString.Substring(0, 90) : resultString;
         }
 
         /// <summary>
