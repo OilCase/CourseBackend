@@ -1,4 +1,4 @@
-﻿using Courses.Model.Courses.Testings;
+using Courses.Model.Courses.Testings;
 using Courses.Model.Users;
 
 namespace Courses.Model.UserSessions

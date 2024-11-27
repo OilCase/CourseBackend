@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using static Courses.Model.Localization;
@@ -15,7 +15,7 @@ namespace Courses.Model
 
     public class Localization
     {
-        [Key] 
+        [Key]
         public int Id { get; set; }
         public List<LocalizationValue> Values { get; set; }
 
@@ -32,7 +32,7 @@ namespace Courses.Model
         public Dictionary<string, string> ToDict() => this.Values
             .Select(v => new { v.LanguageId, v.Value })
             .ToDictionary(x => x.LanguageId, x => x.Value);
-        
+
         /// <summary>
         /// Добавляет LocalizationValues к 
         /// существующей Localization
@@ -60,7 +60,7 @@ namespace Courses.Model
         public Dictionary<string, string> ToDictionary()
         {
             var dict = new Dictionary<string, string>();
-            foreach(var value in Values)
+            foreach (var value in Values)
             {
                 dict[value.LanguageId] = value.Value;
             }
@@ -85,7 +85,7 @@ namespace Courses.Model
 
     public class LocalizationValue
     {
-        [Key] 
+        [Key]
         public int Id { get; set; }
 
         public string Value { get; set; }
@@ -93,7 +93,7 @@ namespace Courses.Model
         public int LocalizationId { get; set; }
         public Localization? Localization { get; set; }
 
-        [ForeignKey(nameof(Language))] 
+        [ForeignKey(nameof(Language))]
         public string LanguageId { get; set; }
         public Language? Language { get; set; }
     }

@@ -1,4 +1,4 @@
-﻿namespace Courses.Model.Courses
+namespace Courses.Model.Courses
 {
     public class Direction
     {

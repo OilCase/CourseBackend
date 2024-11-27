@@ -1,6 +1,6 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
-using System.Runtime.Serialization;
 using Courses.Model.Courses.Testings;
+using System.ComponentModel.DataAnnotations.Schema;
+using System.Runtime.Serialization;
 using static Courses.Model.Courses.Testings.EnumTestingCategory;
 
 

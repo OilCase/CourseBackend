@@ -1,13 +1,12 @@
-﻿using Microsoft.EntityFrameworkCore;
-using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
-using Microsoft.AspNetCore.Identity;
-using System.Diagnostics;
-
-using Courses.Model.UserSessions;
-using Courses.Model.Users;
 using Courses.Model.Courses;
 using Courses.Model.Courses.Testings;
 using Courses.Model.Labels;
+using Courses.Model.Users;
+using Courses.Model.UserSessions;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
+using System.Diagnostics;
 
 namespace Courses.Model
 {
@@ -54,7 +53,7 @@ namespace Courses.Model
         public static void CreateIndexes(ModelBuilder builder)
         {
             builder.Entity<CourseAuthor>()
-                .HasIndex(e => new { e.UserId, e.CourseId})
+                .HasIndex(e => new { e.UserId, e.CourseId })
                 .IsUnique();
 
             builder.Entity<Course>()
@@ -74,7 +73,7 @@ namespace Courses.Model
                 new() { Id = "fr", Name = "Français" }
             );
 
-            var shelfLocalization = new Localization() { Id = 1};
+            var shelfLocalization = new Localization() { Id = 1 };
             builder.Entity<Localization>().HasData(shelfLocalization);
             var shelfLocalizationValues = new[]
             {
@@ -225,7 +224,7 @@ namespace Courses.Model
         /// ContentOwner
         /// </summary>
         /// <typeparam name="T"></typeparam>
-        private void RemoveContentWith<T>() where T: ContentOwner
+        private void RemoveContentWith<T>() where T : ContentOwner
         {
             var contentForDelete = ChangeTracker
                 .Entries()
@@ -282,6 +281,6 @@ namespace Courses.Model
         public virtual DbSet<CourseChange> CourseChanges { get; set; }
 
         public virtual DbSet<Label> Labels { get; set; }
-        public virtual DbSet<Heading> Headings{ get; set; }
+        public virtual DbSet<Heading> Headings { get; set; }
     }
 }

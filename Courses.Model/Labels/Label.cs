@@ -1,10 +1,10 @@
-﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations;
 
 namespace Courses.Model.Labels
 {
     public class Label // Метки
     {
-        [Key] 
+        [Key]
         public int Id { get; set; }
 
         public string Name { get; set; }

@@ -1,4 +1,4 @@
-﻿namespace Courses.Model.Courses.Testings
+namespace Courses.Model.Courses.Testings
 {
     public class Answer
     {

@@ -1,9 +1,9 @@
-﻿using HtmlAgilityPack;
+using HtmlAgilityPack;
 using System.ComponentModel.DataAnnotations;
 
 namespace Courses.Model.Courses.Testings
 {
-    public class Question: ContentOwner
+    public class Question : ContentOwner
     {
         [Key]
         public int Id { get; set; }

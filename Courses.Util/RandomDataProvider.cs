@@ -1,4 +1,4 @@
-﻿namespace Courses.Util
+namespace Courses.Util
 {
     public static class RandomDataProvider
     {

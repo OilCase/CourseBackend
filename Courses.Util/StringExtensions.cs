@@ -1,4 +1,4 @@
-﻿namespace Courses.Util.StringExtensions
+namespace Courses.Util.StringExtensions
 {
     public static class StringExtensions
     {

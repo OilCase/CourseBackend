@@ -1,4 +1,4 @@
-﻿using static System.Collections.Specialized.BitVector32;
+using static System.Collections.Specialized.BitVector32;
 
 namespace Courses.Model.Courses
 {

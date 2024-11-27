@@ -1,5 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
 using Courses.Model.Courses.Testings;
+using System.ComponentModel.DataAnnotations;
 
 namespace Courses.Model.Courses
 {
@@ -8,7 +8,7 @@ namespace Courses.Model.Courses
         public const double DefaultPriceInRubles = 1000.0;
 
         public int Id { get; set; }
-        
+
         public int PartId { get; set; }
         public Part? Part { get; set; } = null;
 

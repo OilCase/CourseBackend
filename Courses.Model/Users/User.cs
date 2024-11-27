@@ -1,5 +1,5 @@
-﻿using System.Runtime.Serialization;
 using Microsoft.AspNetCore.Identity;
+using System.Runtime.Serialization;
 
 namespace Courses.Model.Users
 {

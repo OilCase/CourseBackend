@@ -1,11 +1,11 @@
-﻿using System.ComponentModel.DataAnnotations;
-using System.Security.AccessControl;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using System.ComponentModel.DataAnnotations;
+using System.Security.AccessControl;
 
 
 namespace Courses.Model.Courses
 {
-    public class Section: ContentOwner
+    public class Section : ContentOwner
     {
         [Key] public int Id { get; set; }
         public int CourseId { get; set; }
@@ -67,7 +67,7 @@ namespace Courses.Model.Courses
         }
 
         /// <summary> Возвращает кортеж: индекс родительской части, родительской главы и порядковый номер раздела в главе </summary>
-        public (int partIndex, int chapterIndex, int sectionIndex) GetIndexes() => 
+        public (int partIndex, int chapterIndex, int sectionIndex) GetIndexes() =>
                (Chapter.Part.OrderInCourse, Chapter.OrderInPart, OrderInChapter);
 
         public Section()

@@ -1,4 +1,4 @@
-﻿using Courses.Model.Users;
+using Courses.Model.Users;
 
 namespace Courses.Model.Courses
 {

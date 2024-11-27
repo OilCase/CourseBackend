@@ -1,6 +1,6 @@
-﻿using System.Text.Json.Serialization;
 using Courses.Model.Courses.Testings;
 using Newtonsoft.Json;
+using System.Text.Json.Serialization;
 
 
 namespace Courses.Model.UserSessions
