@@ -13,12 +13,16 @@ namespace Courses.Model.Courses.Testings
         public Course Course { get; set; }
         public EnumTestingCategory Category { get; set; } = EnumTestingCategory.Basic;
 
-        // Число попыток для выполнения конкретного теста, зависит от категории теста
+        /// <summary> Число попыток для выполнения конкретного теста, зависит от категории теста </summary>
         public int NumberOfAttempts { get; set; }
-        public int? CutScorePercentages { get; set; } // Проходной балл
+
+        //TODO Указать явно единицу измерения (проценты или баллы)
+        /// <summary> Проходной балл </summary>
+        public int? CutScorePercentages { get; set; }
+
         public int? ChapterId { get; set; }
         public Chapter? Chapter { get; set; }
-        public List<Question> Questions { get; set; } = new();
+        public List<Question> Questions { get; set; } = [];
 
         public string GetFullTitle()
         {
@@ -87,6 +91,16 @@ namespace Courses.Model.Courses.Testings
             var secondQuestion = Questions.First(q => q.Id == (int)secondQuestionId);
             (firstQuestion.OrderInTesting, secondQuestion.OrderInTesting) // swap
                 = (secondQuestion.OrderInTesting, firstQuestion.OrderInTesting);
+        }
+
+        public int MaxScore()
+        {
+            if (Questions.Count == 0)
+            {
+                throw new NotImplementedException("Не загружены вопросы");
+            }
+
+            return Questions.Count;
         }
     }
 
