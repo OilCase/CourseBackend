@@ -1,5 +1,3 @@
-using System.Collections.Generic;
-using System.IO;
 using System.Runtime.Serialization;
 
 
@@ -100,7 +98,13 @@ namespace Courses.Model.Courses.Testings
                 throw new NotImplementedException("Не загружены вопросы");
             }
 
-            return Questions.Count;
+            int maxScore = 0;
+            foreach (var question in Questions)
+            {
+                maxScore += question.CorrectAnswerScore;
+            }
+
+            return maxScore;
         }
     }
 
