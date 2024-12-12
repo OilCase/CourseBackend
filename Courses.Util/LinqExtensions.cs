@@ -80,42 +80,18 @@ public static class LinqExtensions
     /// <param name="condition"></param>
     /// <param name="includeClause"></param>
     /// <returns></returns>
-    public static IQueryable<TEntity> IncludeIf<TEntity>(
-        this IQueryable<TEntity> query
-      , bool condition
-      , Expression<Func<TEntity, object>> includeClause
-      ) where TEntity : class
+    public static IQueryable<TEntity> IncludeIf<TEntity, TProperty>(
+    this IQueryable<TEntity> query,
+    bool condition,
+    Expression<Func<TEntity, TProperty>> includeClause
+) where TEntity : class
     {
         if (condition)
         {
             return query.Include(includeClause);
         }
+
+        // Возвращаем query без изменений
         return query;
-    }
-
-    public static IIncludableQueryable<TEntity, TProperty> IncludeIf<TEntity, TProperty>(
-        this IQueryable<TEntity> query,
-        bool condition,
-        Expression<Func<TEntity, TProperty>> includeClause
-    ) where TEntity : class
-    {
-        if (condition)
-        {
-            return query.Include(includeClause);
-        }
-        return (IIncludableQueryable<TEntity, TProperty>)query;
-    }
-
-    public static IIncludableQueryable<TEntity, TProperty> ThenIncludeIf<TEntity, TPreviousProperty, TProperty>(
-        this IIncludableQueryable<TEntity, TPreviousProperty> query,
-        bool condition,
-        Expression<Func<TPreviousProperty, TProperty>> thenIncludeClause
-    ) where TEntity : class
-    {
-        if (condition)
-        {
-            return query.ThenInclude(thenIncludeClause);
-        }
-        return (IIncludableQueryable<TEntity, TProperty>)query;
     }
 }
