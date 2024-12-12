@@ -1,3 +1,4 @@
+using System.Data.Entity.Infrastructure;
 using System.Runtime.Serialization;
 
 
@@ -26,7 +27,8 @@ namespace Courses.Model.Courses.Testings
         {
             if (Category == EnumTestingCategory.Basic)
             {
-                var (partIndex, chapIndex) = Chapter!.GetIndexes();
+                var (partIndex, chapIndex) = Chapter?.GetIndexes() 
+                    ?? throw new NotImplementedException("Не загружена глава вопроса");
                 return $"Тест {partIndex}.{chapIndex}: {Title}";
             }
 
