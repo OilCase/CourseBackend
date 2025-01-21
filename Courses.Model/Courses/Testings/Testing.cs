@@ -15,7 +15,6 @@ namespace Courses.Model.Courses.Testings
         /// <summary> Число попыток для выполнения конкретного теста, зависит от категории теста </summary>
         public int NumberOfAttempts { get; set; }
 
-        //TODO Указать явно единицу измерения (проценты или баллы)
         /// <summary> Проходной балл </summary>
         public int? CutScorePercentages { get; set; }
 
