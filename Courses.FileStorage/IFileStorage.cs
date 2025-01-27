@@ -14,7 +14,7 @@
         /// существует в хранилище
         /// </summary>
         /// <param name="destinationFileFullName"> Имя файла со всеми префиксами и расширением </param>
-        public bool FileExist(string destinationFileFullName);
+        public Task<bool> FileExistAsync(string destinationFileFullName);
 
         /// <summary>
         /// Загружает file в хранилище
@@ -28,7 +28,7 @@
         /// Удаляет файл с destinationFileFullName из хранилища
         /// </summary>
         /// <param name="destinationFileFullName"> Имя файла со всеми префиксами и расширением </param>
-        public void DeleteFile(string destinationFileFullName);
+        public Task DeleteFileAsync(string destinationFileFullName);
 
         /// <summary>
         /// Возвращает список полных имён файлов,

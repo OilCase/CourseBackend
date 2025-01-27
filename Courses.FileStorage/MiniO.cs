@@ -1,7 +1,7 @@
 ﻿using Microsoft.Extensions.Configuration;
 using Minio;
-using Minio.DataModel;
 using Minio.DataModel.Args;
+using Minio.Exceptions;
 
 namespace Courses.FileStorage
 {
@@ -10,11 +10,11 @@ namespace Courses.FileStorage
     /// </summary>
     public class MiniO : MinioClient, IFileStorage
     {
-        private readonly char pathDelimeter = '/';
+        private const char PathDelimeter = '/';
         private Cache<(byte[] data, string contentType)> Cache { get; init; }
 
-        private string MainUrl { get; init; }
-        private string SSLUrl { get; init; }
+        private string MainUrl { get; }
+        private string SSLUrl { get; }
 
         public MiniO(IConfiguration config)
         {
@@ -33,7 +33,7 @@ namespace Courses.FileStorage
 
             if (!string.IsNullOrEmpty(SSLUrl))
             {
-                // TODO: Разобраться с со скваичиванием по безопансным ссылкам 
+                // TODO: Разобраться с со скачиванием по безопасным ссылкам 
                 this.WithSSL();
             }
             this.Build();
@@ -41,46 +41,117 @@ namespace Courses.FileStorage
             Cache = new(100);
         }
 
+        /// <summary>
+        /// Разделяет строку с fileName на кортеж строк
+        /// (имя бакета, имя файла без префикса бакета)
+        /// </summary>
+        /// <param name="fileName"></param>
+        /// <returns> Two strings tuple (bucketName, fileNameWithoutBucketPrefix) </returns>
+        /// <exception cref="ArgumentException"></exception>
+        private (string bucketName, string fileNameWithoutBucketPrefix) ParseFileName(string fileName)
+        {
+            if (!fileName.Contains(PathDelimeter))
+            {
+                throw new ArgumentException(
+                    $"Имя файла {fileName} не содержит информации о директории хранения");
+            }
+            var tokens = fileName.Split(PathDelimeter);
+            if (tokens.Length == 0)
+            {
+                throw new ArgumentException(
+                    $"Имя файла {fileName} не содержит информации о директории хранения");
+            }
+
+            var bucketName = tokens[0];
+            var fileNameWithoutBucketPrefix = fileName.Replace(bucketName + PathDelimeter, "");
+
+            return (bucketName, fileNameWithoutBucketPrefix);
+        }
+
+        /// <summary>
+        /// Удаляет файл/директорию fileName
+        /// из бакета bucketName
+        /// </summary>
+        /// <param name="bucketName"> Имя бакета </param>
+        /// <param name="fileName"> Имя файла/директории внутри бакета </param>
+        private async Task DeleteFile(string bucketName, string fileName)
+        {
+            var isBucketExist = await BucketExistAsync(bucketName);
+            if (!isBucketExist)
+            {
+                throw new ArgumentException($"В хранилище нет бакета с таким именем: {bucketName}");
+            }
+
+            var removeObjectArgs = new RemoveObjectArgs()
+                .WithBucket(bucketName)
+                .WithObject(fileName);
+
+            await RemoveObjectAsync(removeObjectArgs);
+        }
+
+        /// <summary>
+        /// Возвращает true если файл с именем fileName есть в бакете 
+        /// и false в противном случае
+        /// </summary>
+        /// <param name="bucketName"/>
+        /// <param name="fileName"/>
+        private async Task<bool> ObjectExistAsync(string bucketName, string fileName)
+        {
+            StatObjectArgs statObjectArgs = new StatObjectArgs()
+                .WithBucket(bucketName)
+                .WithObject(fileName);
+
+            try
+            {
+                await StatObjectAsync(statObjectArgs);
+                return true;
+            }
+            catch (MinioException e)
+            {
+                return false;
+            }
+        }
+
+        /// <summary>
+        /// Возвращает true если бакет с именем
+        /// bucketName найден в хранилище
+        /// </summary>
+        /// <param name="bucketName"/>
+        private async Task<bool> BucketExistAsync(string bucketName)
+        {
+            var beArgs = new BucketExistsArgs().WithBucket(bucketName);
+            bool bucketFound = await BucketExistsAsync(beArgs);
+
+            return bucketFound;
+        }
+
         public string GetFileLink(string destinationFileFullName)
         {
             throw new NotImplementedException();
         }
 
-        public bool FileExist(string destinationFileFullName)
+        /// <inheritdoc/>
+        public async Task<bool> FileExistAsync(string destinationFileFullName)
         {
-            throw new NotImplementedException();
+            var (bucketName, fileNameWithoutBucketPrefix) = ParseFileName(destinationFileFullName);
+
+            return await ObjectExistAsync(bucketName, fileNameWithoutBucketPrefix);
         }
 
         /// <inheritdoc/>
         public async Task UploadFileAsync(byte[] file, string destinationFileName)
         {
-            if (!destinationFileName.Contains(pathDelimeter))
-            {
-                throw new ArgumentException(
-                    $"Имя файла {destinationFileName} не содержит информации о директории хранения");
-            }
-            var tokens = destinationFileName.Split('/');
-            if (tokens.Length == 0)
-            {
-                throw new ArgumentException(
-                    $"Имя файла {destinationFileName} не содержит информации о директории хранения");
-            }
-
-            var bucketName = tokens[0];
-            var fileNameWithoutBucketPrefix = destinationFileName.Replace(bucketName + "/", "");
+            var (bucketName, fileNameWithoutBucketPrefix) = ParseFileName(destinationFileName);
 
             // Создаём бакет, если его нет
-            var bucketExists = await BucketExistsAsync(new BucketExistsArgs().WithBucket(bucketName));
-            if (!bucketExists)
+            var isBucketExists = await BucketExistsAsync(new BucketExistsArgs().WithBucket(bucketName));
+            if (!isBucketExists)
             {
                 await MakeBucketAsync(new MakeBucketArgs().WithBucket(bucketName));
             }
 
-            // Проверяем, существует ли файл и удаляем его, если существует
-            if (IsObjectExist(bucketName, fileNameWithoutBucketPrefix))
-            {
-                await DeleteFile(bucketName, fileNameWithoutBucketPrefix);
-            }
+            // Удаляем предыдущую версию файла
+            await DeleteFile(bucketName, fileNameWithoutBucketPrefix);
 
             // Загружаем файл в бакет
             using var stream = new MemoryStream(file);
@@ -91,74 +162,17 @@ namespace Courses.FileStorage
                 .WithObjectSize(stream.Length));
         }
 
-        private async Task DeleteFile(string bucketName, string fileName)
+        /// <inheritdoc/>
+        public async Task DeleteFileAsync(string filename)
         {
-            if (!IsBucketExist(bucketName)) throw new ArgumentException($"В хранилище нет бакета с таким именем: {bucketName}");
-            if (!IsObjectExist(bucketName, fileName)) throw new ArgumentException($"В бакете {bucketName} нет файла {fileName}");
-            var removeObjectArgs = new RemoveObjectArgs()
-                .WithBucket(bucketName)
-                .WithObject(fileName);
+            var (bucketName, fileNameWithoutBucketPrefix) = ParseFileName(filename);
 
-            await RemoveObjectAsync(removeObjectArgs);
-        }
-
-        /// <summary>
-        /// Удаляет файл из файлового хранилища МиниО
-        /// </summary>
-        /// <param name="filename">Строка с именем файла в формате "имя бакета/имя файла(можно с префиксами)"</param>
-        public void DeleteFile(string filename)
-        {
-            var splittedFileName = filename.Split(new[] { '/' }, 2);
-            var bucket = splittedFileName[0];
-            var fileName = splittedFileName[1];
-
-            if (!IsBucketExist(bucket)) throw new Exception($"В хранилище нет бакета с таким именем: {bucket}");
-
-            if (!IsObjectExist(bucket, fileName)) throw new Exception($"В бакете {bucket} нет файла {fileName}");
-
-            var removeObjectArgs = new RemoveObjectArgs()
-                .WithBucket(bucket)
-                .WithObject(fileName);
-
-            RemoveObjectAsync(removeObjectArgs).Wait();
+            await DeleteFile(bucketName, fileNameWithoutBucketPrefix);
         }
 
         public List<string> ListFiles(string destinationFolderFullName)
         {
             throw new NotImplementedException();
-        }
-
-        /// <summary>
-        /// Возвращает true если файл с именем fileName есть в бакете 
-        /// и false в противном случае
-        /// </summary>
-        /// <param name="bucket"></param>
-        /// <param name="fileName"></param>
-        /// <returns></returns>
-        public bool IsObjectExist(string bucket, string fileName)
-        {
-            StatObjectArgs statObjectArgs = new StatObjectArgs()
-                .WithBucket(bucket)
-                .WithObject(fileName);
-
-            try
-            {
-                StatObjectAsync(statObjectArgs).Wait();
-                return true;
-            }
-            catch (Exception e)
-            {
-                var x = e.Message;
-                return false;
-            }
-        }
-
-        public bool IsBucketExist(string bucketName)
-        {
-            var beArgs = new BucketExistsArgs().WithBucket(bucketName);
-            bool bucketFound = BucketExistsAsync(beArgs).Result;
-
-            return bucketFound;
         }
     }
 }
