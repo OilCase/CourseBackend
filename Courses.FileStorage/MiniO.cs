@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
 using Minio;
 using Minio.DataModel.Args;
 using Minio.Exceptions;
@@ -10,14 +11,16 @@ namespace Courses.FileStorage
     /// </summary>
     public class MiniO : MinioClient, IFileStorage
     {
+        private readonly ILogger<MiniO> _logger;
         private const char PathDelimeter = '/';
         private Cache<(byte[] data, string contentType)> Cache { get; init; }
 
         private string MainUrl { get; }
         private string SSLUrl { get; }
 
-        public MiniO(IConfiguration config)
+        public MiniO(IConfiguration config, ILogger<MiniO> logger)
         {
+            _logger = logger;
             MainUrl = config["Storage:urlStorage"]!;
             SSLUrl = config["Storage:urlSSL"];
             if (!string.IsNullOrEmpty(SSLUrl))
@@ -106,8 +109,9 @@ namespace Courses.FileStorage
                 await StatObjectAsync(statObjectArgs);
                 return true;
             }
-            catch (MinioException e)
+            catch (MinioException ex)
             {
+                _logger.LogError(ex, DateTime.UtcNow.ToLongTimeString());
                 return false;
             }
         }
@@ -123,6 +127,45 @@ namespace Courses.FileStorage
             bool bucketFound = await BucketExistsAsync(beArgs);
 
             return bucketFound;
+        }
+
+        /// <inheritdoc/>
+        public async Task<byte[]> GetFileBytesAsync(string destinationFileFullName)
+        {
+            var (bucketName, fileNameWithoutBucketPrefix) = ParseFileName(destinationFileFullName);
+            
+            var isBucketExist = await BucketExistAsync(bucketName);
+            if (!isBucketExist)
+            {
+                throw new ArgumentException($"Нет бакета с таким именем: {bucketName}");
+            }
+
+            var isFileExists = await ObjectExistAsync(bucketName, fileNameWithoutBucketPrefix);
+            if (!isFileExists)
+            {
+                throw new ArgumentException($"Не найден файл: {fileNameWithoutBucketPrefix}");
+            }
+
+            using (var ms = new MemoryStream())
+            {
+                try
+                {
+                    await GetObjectAsync(new GetObjectArgs()
+                        .WithBucket(bucketName)
+                        .WithObject(fileNameWithoutBucketPrefix)
+                        .WithCallbackStream(async stream =>
+                        {
+                            await stream.CopyToAsync(ms);
+                        }));
+                }
+                catch (MinioException ex)
+                {
+                    _logger.LogError(ex, DateTime.UtcNow.ToLongTimeString());
+                }
+
+                var fileBytes = ms.ToArray();
+                return fileBytes;
+            }
         }
 
         public string GetFileLink(string destinationFileFullName)
@@ -149,9 +192,11 @@ namespace Courses.FileStorage
             {
                 await MakeBucketAsync(new MakeBucketArgs().WithBucket(bucketName));
             }
-
-            // Удаляем предыдущую версию файла
-            await DeleteFile(bucketName, fileNameWithoutBucketPrefix);
+            else
+            {
+                // Удаляем предыдущую версию файла
+                await DeleteFile(bucketName, fileNameWithoutBucketPrefix);
+            }
 
             // Загружаем файл в бакет
             using var stream = new MemoryStream(file);

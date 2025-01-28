@@ -5,6 +5,13 @@
     /// </summary>
     public interface IFileStorage
     {
+        /// <summary>
+        /// Возвращает содержимое файла с destinationFileFullName
+        /// в виде массива байт
+        /// </summary>
+        /// <param name="destinationFileFullName"> Имя файла со всеми префиксами и расширением </param>
+        public Task<byte[]> GetFileBytesAsync(string destinationFileFullName);
+
         /// <summary> Возвращает ссылку на скачивание файла </summary>
         /// <param name="destinationFileFullName"> Имя файла со всеми префиксами и расширением </param>
         public string GetFileLink(string destinationFileFullName);
