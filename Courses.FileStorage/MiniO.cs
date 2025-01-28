@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Minio;
+using Minio.DataModel;
 using Minio.DataModel.Args;
 using Minio.Exceptions;
 
@@ -51,7 +52,7 @@ namespace Courses.FileStorage
         /// <param name="fileName"></param>
         /// <returns> Two strings tuple (bucketName, fileNameWithoutBucketPrefix) </returns>
         /// <exception cref="ArgumentException"></exception>
-        private (string bucketName, string fileNameWithoutBucketPrefix) ParseFileName(string fileName)
+        private (string bucketName, string destinationPathWithoutBucketPrefix) ParseFileName(string fileName)
         {
             if (!fileName.Contains(PathDelimeter))
             {
@@ -66,9 +67,9 @@ namespace Courses.FileStorage
             }
 
             var bucketName = tokens[0];
-            var fileNameWithoutBucketPrefix = fileName.Replace(bucketName + PathDelimeter, "");
+            var destinationPathWithoutBucketPrefix = fileName.Replace(bucketName + PathDelimeter, "");
 
-            return (bucketName, fileNameWithoutBucketPrefix);
+            return (bucketName, destinationPathWithoutBucketPrefix);
         }
 
         /// <summary>
@@ -215,9 +216,40 @@ namespace Courses.FileStorage
             await DeleteFile(bucketName, fileNameWithoutBucketPrefix);
         }
 
-        public List<string> ListFiles(string destinationFolderFullName)
+        /// <inheritdoc/>
+        public async Task<List<string>> ListFilesAsync(string destinationFolderFullName)
         {
-            throw new NotImplementedException();
+            var tokens = destinationFolderFullName.Split(PathDelimeter);
+            var bucketName = tokens[0];
+            var prefix = "";
+            if (tokens.Length > 1)
+            {
+                prefix = destinationFolderFullName.Replace(bucketName + PathDelimeter, "");
+            }
+
+            var filePaths = new List<string>();
+            try
+            {
+                var listArgs = new ListObjectsArgs()
+                    .WithBucket(destinationFolderFullName)
+                    .WithPrefix(prefix)
+                    .WithRecursive(true);
+
+                // Слушаем поток объектов и добавляем их в список
+                await foreach (var item in ListObjectsEnumAsync(listArgs))
+                {
+                    if (!item.IsDir)
+                    {
+                        filePaths.Add($"{destinationFolderFullName}/{item.Key}");
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, DateTime.UtcNow.ToLongTimeString());
+            }
+
+            return filePaths;
         }
     }
 }

@@ -42,6 +42,6 @@
         /// содержащихся в директории destinationFolderFullName
         /// </summary>
         /// <param name="destinationFolderFullName"> Имя директории в хранилище со всеми префиксами </param>
-        public List<string> ListFiles(string destinationFolderFullName);
+        public Task<List<string>> ListFilesAsync(string destinationFolderFullName);
     }
 }
