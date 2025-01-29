@@ -134,7 +134,7 @@ namespace Courses.FileStorage
         public async Task<byte[]> GetFileBytesAsync(string destinationFileFullName)
         {
             var (bucketName, fileNameWithoutBucketPrefix) = ParseFileName(destinationFileFullName);
-            
+
             var isBucketExist = await BucketExistAsync(bucketName);
             if (!isBucketExist)
             {
@@ -154,9 +154,9 @@ namespace Courses.FileStorage
                     await GetObjectAsync(new GetObjectArgs()
                         .WithBucket(bucketName)
                         .WithObject(fileNameWithoutBucketPrefix)
-                        .WithCallbackStream(async stream =>
+                        .WithCallbackStream(stream =>
                         {
-                            await stream.CopyToAsync(ms);
+                            stream.CopyToAsync(ms).Wait();
                         }));
                 }
                 catch (MinioException ex)
