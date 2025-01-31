@@ -1,4 +1,6 @@
-﻿using Microsoft.Extensions.Configuration;
+﻿using System.IO.MemoryMappedFiles;
+using System.Text;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Minio;
 using Minio.DataModel;
@@ -131,7 +133,43 @@ namespace Courses.FileStorage
         }
 
         /// <inheritdoc/>
-        public async Task<byte[]> GetFileBytesAsync(string destinationFileFullName)
+        public async Task<MemoryStream> GetFileStreamAsync(string destinationFileFullName)
+        {
+            var (bucketName, fileNameWithoutBucketPrefix) = ParseFileName(destinationFileFullName);
+
+            var isBucketExist = await BucketExistAsync(bucketName);
+            if (!isBucketExist)
+            {
+                throw new ArgumentException($"Нет бакета с таким именем: {bucketName}");
+            }
+
+            var isFileExists = await ObjectExistAsync(bucketName, fileNameWithoutBucketPrefix);
+            if (!isFileExists)
+            {
+                throw new ArgumentException($"Не найден файл: {fileNameWithoutBucketPrefix}");
+            }
+
+            var ms = new MemoryStream();
+            try
+            {
+                await GetObjectAsync(new GetObjectArgs()
+                    .WithBucket(bucketName)
+                    .WithObject(fileNameWithoutBucketPrefix)
+                    .WithCallbackStream(stream =>
+                    {
+                        stream.CopyTo(ms);
+                    }));
+            }
+            catch (MinioException ex)
+            {
+                _logger.LogError(ex, DateTime.UtcNow.ToLongTimeString());
+            }
+
+            return ms;
+        }
+
+        /// <inheritdoc/>
+            public async Task<byte[]> GetFileBytesAsync(string destinationFileFullName)
         {
             var (bucketName, fileNameWithoutBucketPrefix) = ParseFileName(destinationFileFullName);
 

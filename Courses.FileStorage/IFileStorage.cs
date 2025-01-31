@@ -12,6 +12,13 @@
         /// <param name="destinationFileFullName"> Имя файла со всеми префиксами и расширением </param>
         public Task<byte[]> GetFileBytesAsync(string destinationFileFullName);
 
+        /// <summary>
+        /// Возвращает содержимое файла с destinationFileFullName
+        /// в виде потока
+        /// </summary>
+        /// <param name="destinationFileFullName"> Имя файла со всеми префиксами и расширением </param>
+        public Task<MemoryStream> GetFileStreamAsync(string destinationFileFullName);
+
         /// <summary> Возвращает ссылку на скачивание файла </summary>
         /// <param name="destinationFileFullName"> Имя файла со всеми префиксами и расширением </param>
         public string GetFileLink(string destinationFileFullName);
