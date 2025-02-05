@@ -16,8 +16,7 @@ namespace Courses.FileStorage
     {
         private readonly ILogger<MiniO> _logger;
         private const char PathDelimeter = '/';
-        private Cache<(byte[] data, string contentType)> Cache { get; init; }
-
+        private const int PresignedLifeTimeSeconds = 60 * 3;
         private string MainUrl { get; }
         private string SSLUrl { get; }
 
@@ -43,8 +42,6 @@ namespace Courses.FileStorage
                 this.WithSSL();
             }
             this.Build();
-
-            Cache = new(100);
         }
 
         /// <summary>
@@ -207,9 +204,42 @@ namespace Courses.FileStorage
             }
         }
 
+        /// <inheritdoc/>
         public string GetFileLink(string destinationFileFullName)
         {
             throw new NotImplementedException();
+        }
+
+        /// <inheritdoc/>
+        public async Task<string> GetFileLinkAsync(string destinationFileFullName)
+        {
+            var (bucketName, fileNameWithoutBucketPrefix) = ParseFileName(destinationFileFullName);
+
+            var isBucketExist = await BucketExistAsync(bucketName);
+            if (!isBucketExist)
+            {
+                throw new ArgumentException($"Нет бакета с таким именем: {bucketName}");
+            }
+
+            var isFileExists = await ObjectExistAsync(bucketName, fileNameWithoutBucketPrefix);
+            if (!isFileExists)
+            {
+                throw new ArgumentException($"Не найден файл: {fileNameWithoutBucketPrefix}");
+            }
+
+            try
+            {
+                String url = await PresignedGetObjectAsync(new PresignedGetObjectArgs()
+                    .WithBucket(bucketName)
+                    .WithObject(fileNameWithoutBucketPrefix)
+                    .WithExpiry(PresignedLifeTimeSeconds));
+                return url;
+            }
+            catch (MinioException ex)
+            {
+                _logger.LogError(ex, DateTime.UtcNow.ToLongTimeString());
+                throw;
+            }
         }
 
         /// <inheritdoc/>

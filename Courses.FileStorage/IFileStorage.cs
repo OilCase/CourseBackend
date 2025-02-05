@@ -23,6 +23,10 @@
         /// <param name="destinationFileFullName"> Имя файла со всеми префиксами и расширением </param>
         public string GetFileLink(string destinationFileFullName);
 
+        /// <summary> Возвращает ссылку на скачивание файла </summary>
+        /// <param name="destinationFileFullName"> Имя файла со всеми префиксами и расширением </param>
+        public Task<string> GetFileLinkAsync(string destinationFileFullName);
+
         /// <summary>
         /// Возвращает true если файл с destinationFileFullName
         /// существует в хранилище
