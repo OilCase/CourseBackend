@@ -112,9 +112,18 @@ namespace Courses.Model.Courses
                 return (int)SaleableProduct!.PriceInRubles!;
             }
 
+            if (Chapters.Count == 0)
+            {
+                throw new NotImplementedException("Не подгружены главы курса");
+            }
+
             var price = 0;
             foreach (var chapter in Chapters)
             {
+                if (chapter.SaleableProduct == null)
+                {
+                    throw new NotImplementedException("Не подгружен SaleableProduct у главы");
+                }
                 price += (int)chapter.SaleableProduct!.PriceInRubles!;
             }
 
