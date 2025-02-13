@@ -1,5 +1,6 @@
 using HtmlAgilityPack;
 using System.ComponentModel.DataAnnotations;
+using System.Runtime.CompilerServices;
 
 namespace Courses.Model.Courses.Testings
 {
@@ -62,12 +63,12 @@ namespace Courses.Model.Courses.Testings
         /// </summary>
         public void AddAnswers()
         {
-            var answers = new List<Answer>()
+            var answers = new List<Answer>
             {
-                new Answer(),
-                new Answer(),
-                new Answer(),
-                new Answer()
+                new(),
+                new(),
+                new(),
+                new()
             };
             Answers.AddRange(answers);
         }
@@ -82,6 +83,31 @@ namespace Courses.Model.Courses.Testings
             var questions = Testing.Questions;
 
             return questions.Count > 1;
+        }
+    }
+
+    public static class QuestionExtensions
+    {
+        /// <summary>
+        /// Возвращает список строковых id файлов
+        /// из хранилища, которые соответствуют question.content.fileId
+        /// </summary>
+        /// <param name="questions"></param>
+        /// <param name="fileIdsFromStorage"></param>
+        public static string[] GetExistingFileIds(this IEnumerable<Question> questions, IEnumerable<string> fileIdsFromStorage)
+        {
+            foreach (var question in questions)
+            {
+                if (question.Content == null)
+                {
+                    throw new NotImplementedException("Не подгружен контент вопросов");
+                }
+            }
+            return questions
+                .Where(q => fileIdsFromStorage
+                    .Contains(q.Content.FileId))
+                .Select(q => q.Content.FileId)
+                .ToArray();
         }
     }
 

@@ -1,23 +1,28 @@
-﻿using Microsoft.Extensions.Configuration;
+﻿using System.IO.MemoryMappedFiles;
+using System.Text;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
 using Minio;
+using Minio.DataModel;
 using Minio.DataModel.Args;
+using Minio.Exceptions;
 
 namespace Courses.FileStorage
 {
     /// <summary>
-    /// Класс <c>MiniO</c> реализует интерфейс IFileStorage для файлового хранилища МиниО.
+    /// Реализует интерфейс IFileStorage для файлового хранилища МиниО.
     /// </summary>
     public class MiniO : MinioClient, IFileStorage
     {
-        /// <param name="config"> </param>
-        ///
-        private Cache<(byte[] data, string contentType)> _cache { get; init; }
+        private readonly ILogger<MiniO> _logger;
+        private const char PathDelimeter = '/';
+        private const int PresignedLifeTimeSeconds = 60 * 3;
+        private string MainUrl { get; }
+        private string SSLUrl { get; }
 
-        private string MainUrl { get; init; }
-        private string SSLUrl { get; init; }
-
-        public MiniO(IConfiguration config)
+        public MiniO(IConfiguration config, ILogger<MiniO> logger)
         {
+            _logger = logger;
             MainUrl = config["Storage:urlStorage"]!;
             SSLUrl = config["Storage:urlSSL"];
             if (!string.IsNullOrEmpty(SSLUrl))
@@ -33,230 +38,286 @@ namespace Courses.FileStorage
 
             if (!string.IsNullOrEmpty(SSLUrl))
             {
-                // TODO: Разобраться с со скваичиванием по безопансным ссылкам 
+                // TODO: Разобраться с со скачиванием по безопасным ссылкам 
                 this.WithSSL();
             }
             this.Build();
-
-            _cache = new(100);
-        }
-
-
-        /// <summary>
-        /// Этот метод возвращает сгенерированную ссылку на скачивание файла из MiniO.
-        /// Если файл не найден - вернёт пустую строку
-        /// </summary>
-        /// <param name="filename">Имя файла в формате "имя бакета/имя файла (возможно, с префиксами)"</param>
-        /// <returns>Строка, содержащую ссылку на скачивание файла</returns>
-        public string GetFileLink(string filename)
-        {
-            var splittedFileName = filename.Split(['/'], 2);
-            var bucket = splittedFileName[0];
-            var fileName = splittedFileName[1];
-
-            PresignedGetObjectArgs args = new PresignedGetObjectArgs()
-                .WithBucket(bucket)
-                .WithObject(fileName)
-                .WithExpiry(60 * 60 * 24);
-
-            string url = FileExist(filename)
-                ? PresignedGetObjectAsync(args).Result
-                : "";
-
-            return url;
         }
 
         /// <summary>
-        /// Этот метод возвращает файл и content-type файла из MiniO
+        /// Разделяет строку с fileName на кортеж строк
+        /// (имя бакета, имя файла без префикса бакета)
         /// </summary>
-        /// <param name="filename">Имя файла в формате "имя бакета/имя файла(возможно, с префиксами)"</param>
-        /// <returns>Кортеж, содержащий сам файл, представленный массивом байт, и строку, содержащую content-type</returns>
-        public (byte[], string) GetFile(string filename)
+        /// <param name="fileName"></param>
+        /// <returns> Two strings tuple (bucketName, fileNameWithoutBucketPrefix) </returns>
+        /// <exception cref="ArgumentException"></exception>
+        private (string bucketName, string destinationPathWithoutBucketPrefix) ParseFileName(string fileName)
         {
-            var cacheObject = _cache[filename];
-            if (cacheObject != default)
-                return cacheObject;
-
-            var splittedFileName = filename.Split(['/'], 2);
-            var bucket = splittedFileName[0].ToLower();
-            var fileName = splittedFileName[1];
-
-            // Параметры для получения информации по файлу
-            StatObjectArgs statObjectArgs = new StatObjectArgs()
-                .WithBucket(bucket)
-                .WithObject(fileName);
-
-            var statResult = StatObjectAsync(statObjectArgs).Result;
-            var contentType = statResult.ContentType;
-
-            MemoryStream destination = new();
-
-            // Параметры для получения файла (копируем файл в память)
-            GetObjectArgs getObjectArgs = new GetObjectArgs()
-                .WithBucket(bucket)
-                .WithObject(fileName)
-                .WithCallbackStream((stream) => { stream.CopyTo(destination); });
-            GetObjectAsync(getObjectArgs).Wait();
-
-            var data = destination.ToArray();
-
-            _cache[filename] = (data, contentType);
-            return (data, contentType);
-        }
-
-        public bool FileExist(string filename) => IsObjectExist(filename.Split('/', 2)[0], filename.Split('/', 2)[1]);
-
-
-        /// <summary>
-        /// Этот метод возвращает имена файлов, которые содержатся в определённом бакете.
-        /// Имя бакета не добавляется к возвращаемым именам файлов.
-        /// </summary>
-        /// <param name="path">Строка, содержащая путь до интересующей нас директории в МиниО. 
-        ///                    Может содержать префиксы("bucketName/prefix1/prefix2"), 
-        ///                    тогда имена файлов на выходе будут отфильтрованы по префиксам</param>
-        /// <returns></returns>
-        public List<string> ListFiles(string path)
-        {
-            string bucket = path;
-            string prefix = "";
-            if (path.Contains("/"))
+            if (!fileName.Contains(PathDelimeter))
             {
-                var splittedPath = path.Split(new[] { '/' }, 2);
-                bucket = splittedPath[0];
-                prefix = splittedPath[1];
+                throw new ArgumentException(
+                    $"Имя файла {fileName} не содержит информации о директории хранения");
+            }
+            var tokens = fileName.Split(PathDelimeter);
+            if (tokens.Length == 0)
+            {
+                throw new ArgumentException(
+                    $"Имя файла {fileName} не содержит информации о директории хранения");
             }
 
-            ListObjectsArgs args = new ListObjectsArgs()
-                .WithBucket(bucket)
-                .WithRecursive(true);
+            var bucketName = tokens[0];
+            var destinationPathWithoutBucketPrefix = fileName.Replace(bucketName + PathDelimeter, "");
 
-            var fileNames = ListObjectsEnumAsync(args)
-                .Select(fn => fn.Key)
-                .Where(fn => fn.StartsWith(prefix))
-                .ToListAsync()
-                .Result;
-
-            return fileNames;
+            return (bucketName, destinationPathWithoutBucketPrefix);
         }
 
         /// <summary>
-        /// Загружает файл в объектное хранилище МиниО.
-        /// В случае, если бакет, определенный в fileName не существует, 
-        /// или файл с таким именем уже есть в бакете - выбрасывает исключение
+        /// Удаляет файл/директорию fileName
+        /// из бакета bucketName
         /// </summary>
-        /// <param name="fileBytes">Байтовое представление файла</param>
-        /// <param name="path">Имя файла в формате "имя бакета//имя файла (можно с префиксами)"</param>
-        /// <param name="contentType">Строка с MIME-типом файла"</param>
-        public void UploadFile(byte[] fileBytes, string path, string contentType)
+        /// <param name="bucketName"> Имя бакета </param>
+        /// <param name="fileName"> Имя файла/директории внутри бакета </param>
+        private async Task DeleteFile(string bucketName, string fileName)
         {
-            if (!path.Contains('/'))
-                throw new ArgumentException("Имя (path) должно содержать имя бакета до '/'");
-            var splittedFileName = path.Split(['/'], 2);
-
-
-            var bucket = splittedFileName[0];
-            var fileName = splittedFileName[1];
-
-
-            if (!IsBucketExist(bucket)) MakeBucketAsync(new MakeBucketArgs().WithBucket(bucket));
-
-            if (IsObjectExist(bucket, fileName)) DeleteFile(path);
-
-            var stream = new MemoryStream(fileBytes);
-
-            PutObjectArgs putObjectArgs = new PutObjectArgs()
-                .WithBucket(bucket)
-                .WithObject(fileName)
-                .WithObjectSize(stream.Length)
-                .WithContentType(contentType)
-                .WithStreamData(stream);
-
-            var result = PutObjectAsync(putObjectArgs).Result;
-        }
-
-        /// <summary> Загружает файл в объектное хранилище МиниО.
-        /// В случае, если бакет, определенный в fileName не существует, 
-        /// или файл с таким именем уже есть в бакете - выбрасывает исключение </summary>
-        /// <param name="fileBytes">Байтовое представление файла</param>
-        /// <param name="path">Имя файла в формате "имя бакета//имя файла (можно с префиксами)"</param>
-        /// <param name="contentType">Строка с MIME-типом файла"</param>
-        public void UploadFile(Stream stream, string path, string contentType)
-        {
-            if (!path.Contains('/'))
-                throw new ArgumentException("Имя (path) должно содержать имя бакета до '/'");
-
-            var splittedFileName = path.Split(['/'], 2);
-
-            var bucket = splittedFileName[0];
-            var fileName = splittedFileName[1];
-
-
-            if (!IsBucketExist(bucket)) MakeBucketAsync(new MakeBucketArgs().WithBucket(bucket));
-
-            if (IsObjectExist(bucket, fileName)) DeleteFile(path);
-
-            PutObjectArgs putObjectArgs = new PutObjectArgs()
-                .WithBucket(bucket)
-                .WithObject(fileName)
-                .WithObjectSize(stream.Length)
-                .WithContentType(contentType)
-                .WithStreamData(stream);
-
-            var result = PutObjectAsync(putObjectArgs).Result;
-        }
-
-        /// <summary>
-        /// Удаляет файл из файлового хранилища МиниО
-        /// </summary>
-        /// <param name="filename">Строка с именем файла в формате "имя бакета/имя файла(можно с префиксами)"</param>
-        public void DeleteFile(string filename)
-        {
-            var splittedFileName = filename.Split(new[] { '/' }, 2);
-            var bucket = splittedFileName[0];
-            var fileName = splittedFileName[1];
-
-            if (!IsBucketExist(bucket)) throw new Exception($"В хранилище нет бакета с таким именем: {bucket}");
-
-            if (!IsObjectExist(bucket, fileName)) throw new Exception($"В бакете {bucket} нет файла {fileName}");
+            var isBucketExist = await BucketExistAsync(bucketName);
+            if (!isBucketExist)
+            {
+                throw new ArgumentException($"В хранилище нет бакета с таким именем: {bucketName}");
+            }
 
             var removeObjectArgs = new RemoveObjectArgs()
-                .WithBucket(bucket)
+                .WithBucket(bucketName)
                 .WithObject(fileName);
 
-            RemoveObjectAsync(removeObjectArgs).Wait();
+            await RemoveObjectAsync(removeObjectArgs);
         }
 
         /// <summary>
         /// Возвращает true если файл с именем fileName есть в бакете 
         /// и false в противном случае
         /// </summary>
-        /// <param name="bucket"></param>
-        /// <param name="fileName"></param>
-        /// <returns></returns>
-        public bool IsObjectExist(string bucket, string fileName)
+        /// <param name="bucketName"/>
+        /// <param name="fileName"/>
+        private async Task<bool> ObjectExistAsync(string bucketName, string fileName)
         {
             StatObjectArgs statObjectArgs = new StatObjectArgs()
-                .WithBucket(bucket)
+                .WithBucket(bucketName)
                 .WithObject(fileName);
 
             try
             {
-                StatObjectAsync(statObjectArgs).Wait();
+                await StatObjectAsync(statObjectArgs);
                 return true;
             }
-            catch (Exception e)
+            catch (MinioException ex)
             {
-                var x = e.Message;
+                _logger.LogError(ex, DateTime.UtcNow.ToLongTimeString());
                 return false;
             }
         }
 
-        public bool IsBucketExist(string bucketName)
+        /// <summary>
+        /// Возвращает true если бакет с именем
+        /// bucketName найден в хранилище
+        /// </summary>
+        /// <param name="bucketName"/>
+        private async Task<bool> BucketExistAsync(string bucketName)
         {
             var beArgs = new BucketExistsArgs().WithBucket(bucketName);
-            bool bucketFound = BucketExistsAsync(beArgs).Result;
+            bool bucketFound = await BucketExistsAsync(beArgs);
 
             return bucketFound;
+        }
+
+        /// <inheritdoc/>
+        public async Task<MemoryStream> GetFileStreamAsync(string destinationFileFullName)
+        {
+            var (bucketName, fileNameWithoutBucketPrefix) = ParseFileName(destinationFileFullName);
+
+            var isBucketExist = await BucketExistAsync(bucketName);
+            if (!isBucketExist)
+            {
+                throw new ArgumentException($"Нет бакета с таким именем: {bucketName}");
+            }
+
+            var isFileExists = await ObjectExistAsync(bucketName, fileNameWithoutBucketPrefix);
+            if (!isFileExists)
+            {
+                throw new ArgumentException($"Не найден файл: {fileNameWithoutBucketPrefix}");
+            }
+
+            var ms = new MemoryStream();
+            try
+            {
+                await GetObjectAsync(new GetObjectArgs()
+                    .WithBucket(bucketName)
+                    .WithObject(fileNameWithoutBucketPrefix)
+                    .WithCallbackStream(stream =>
+                    {
+                        stream.CopyTo(ms);
+                    }));
+            }
+            catch (MinioException ex)
+            {
+                _logger.LogError(ex, DateTime.UtcNow.ToLongTimeString());
+            }
+
+            return ms;
+        }
+
+        /// <inheritdoc/>
+            public async Task<byte[]> GetFileBytesAsync(string destinationFileFullName)
+        {
+            var (bucketName, fileNameWithoutBucketPrefix) = ParseFileName(destinationFileFullName);
+
+            var isBucketExist = await BucketExistAsync(bucketName);
+            if (!isBucketExist)
+            {
+                throw new ArgumentException($"Нет бакета с таким именем: {bucketName}");
+            }
+
+            var isFileExists = await ObjectExistAsync(bucketName, fileNameWithoutBucketPrefix);
+            if (!isFileExists)
+            {
+                throw new ArgumentException($"Не найден файл: {fileNameWithoutBucketPrefix}");
+            }
+
+            using (var ms = new MemoryStream())
+            {
+                try
+                {
+                    await GetObjectAsync(new GetObjectArgs()
+                        .WithBucket(bucketName)
+                        .WithObject(fileNameWithoutBucketPrefix)
+                        .WithCallbackStream(stream =>
+                        {
+                            stream.CopyToAsync(ms).Wait();
+                        }));
+                }
+                catch (MinioException ex)
+                {
+                    _logger.LogError(ex, DateTime.UtcNow.ToLongTimeString());
+                }
+
+                var fileBytes = ms.ToArray();
+                return fileBytes;
+            }
+        }
+
+        /// <inheritdoc/>
+        public string GetFileLink(string destinationFileFullName)
+        {
+            throw new NotImplementedException();
+        }
+
+        /// <inheritdoc/>
+        public async Task<string> GetFileLinkAsync(string destinationFileFullName)
+        {
+            var (bucketName, fileNameWithoutBucketPrefix) = ParseFileName(destinationFileFullName);
+
+            var isBucketExist = await BucketExistAsync(bucketName);
+            if (!isBucketExist)
+            {
+                throw new ArgumentException($"Нет бакета с таким именем: {bucketName}");
+            }
+
+            var isFileExists = await ObjectExistAsync(bucketName, fileNameWithoutBucketPrefix);
+            if (!isFileExists)
+            {
+                throw new ArgumentException($"Не найден файл: {fileNameWithoutBucketPrefix}");
+            }
+
+            try
+            {
+                String url = await PresignedGetObjectAsync(new PresignedGetObjectArgs()
+                    .WithBucket(bucketName)
+                    .WithObject(fileNameWithoutBucketPrefix)
+                    .WithExpiry(PresignedLifeTimeSeconds));
+                return url;
+            }
+            catch (MinioException ex)
+            {
+                _logger.LogError(ex, DateTime.UtcNow.ToLongTimeString());
+                throw;
+            }
+        }
+
+        /// <inheritdoc/>
+        public async Task<bool> FileExistAsync(string destinationFileFullName)
+        {
+            var (bucketName, fileNameWithoutBucketPrefix) = ParseFileName(destinationFileFullName);
+
+            return await ObjectExistAsync(bucketName, fileNameWithoutBucketPrefix);
+        }
+
+        /// <inheritdoc/>
+        public async Task UploadFileAsync(byte[] file, string destinationFileName)
+        {
+            var (bucketName, fileNameWithoutBucketPrefix) = ParseFileName(destinationFileName);
+
+            // Создаём бакет, если его нет
+            var isBucketExists = await BucketExistsAsync(new BucketExistsArgs().WithBucket(bucketName));
+            if (!isBucketExists)
+            {
+                await MakeBucketAsync(new MakeBucketArgs().WithBucket(bucketName));
+            }
+            else
+            {
+                // Удаляем предыдущую версию файла
+                await DeleteFile(bucketName, fileNameWithoutBucketPrefix);
+            }
+
+            // Загружаем файл в бакет
+            using var stream = new MemoryStream(file);
+            await PutObjectAsync(new PutObjectArgs()
+                .WithBucket(bucketName)
+                .WithObject(fileNameWithoutBucketPrefix)
+                .WithStreamData(stream)
+                .WithObjectSize(stream.Length));
+        }
+
+        /// <inheritdoc/>
+        public async Task DeleteFileAsync(string filename)
+        {
+            var (bucketName, fileNameWithoutBucketPrefix) = ParseFileName(filename);
+
+            await DeleteFile(bucketName, fileNameWithoutBucketPrefix);
+        }
+
+        /// <inheritdoc/>
+        public async Task<List<string>> ListFilesAsync(string destinationFolderFullName)
+        {
+            var tokens = destinationFolderFullName.Split(PathDelimeter);
+            var bucketName = tokens[0];
+            var prefix = "";
+            if (tokens.Length > 1)
+            {
+                prefix = destinationFolderFullName.Replace(bucketName + PathDelimeter, "");
+            }
+
+            var filePaths = new List<string>();
+            try
+            {
+                var listArgs = new ListObjectsArgs()
+                    .WithBucket(destinationFolderFullName)
+                    .WithPrefix(prefix)
+                    .WithRecursive(true);
+
+                // Слушаем поток объектов и добавляем их в список
+                await foreach (var item in ListObjectsEnumAsync(listArgs))
+                {
+                    if (!item.IsDir)
+                    {
+                        filePaths.Add($"{destinationFolderFullName}/{item.Key}");
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, DateTime.UtcNow.ToLongTimeString());
+            }
+
+            return filePaths;
         }
     }
 }

@@ -1,3 +1,4 @@
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Data.Entity.Infrastructure;
 using System.Runtime.Serialization;
 
@@ -21,6 +22,12 @@ namespace Courses.Model.Courses.Testings
         public int? ChapterId { get; set; }
         public Chapter? Chapter { get; set; }
         public List<Question> Questions { get; set; } = [];
+
+        /// <summary> Путь до директории в хранилище, где хранятся файлы вопросов </summary>
+        [NotMapped] public string QuestionsPrefixPath => GetQuestionsPathPrefix();
+
+        /// <summary/>
+        private string GetQuestionsPathPrefix() => $"course-{CourseId}";
 
         public string GetFullTitle()
         {

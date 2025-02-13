@@ -5,41 +5,54 @@
     /// </summary>
     public interface IFileStorage
     {
-        ///// <summary>
-        ///// Возвращает сгенерированную ссылку на скачивание файла по имени файла
-        ///// </summary>
-        ///// <param name="filename"></param>
-        ///// <returns> Строка со ссылкой</returns>
-        //public string GetFileLink(string filename);
-
-        ///// <summary>
-        ///// Возвращает кортеж (массив байт, строка), представляющий файл и content-type файла
-        ///// по имени файла
-        ///// </summary>
-        ///// <param name="filename"></param>
-        ///// <returns>Кортеж (массив байт, строка)</returns>
-        //public (byte[] Bytes, string ContentType) GetFile(string filename);
-
-        ///// <summary> проверяет существование файла </summary>
-        ///// <param name="filename"></param>
-        ///// <returns>bool (существует / не существует)</returns>
-        //public bool FileExist(string filename);
+        /// <summary>
+        /// Возвращает содержимое файла с destinationFileFullName
+        /// в виде массива байт
+        /// </summary>
+        /// <param name="destinationFileFullName"> Имя файла со всеми префиксами и расширением </param>
+        public Task<byte[]> GetFileBytesAsync(string destinationFileFullName);
 
         /// <summary>
-        /// 
+        /// Возвращает содержимое файла с destinationFileFullName
+        /// в виде потока
+        /// </summary>
+        /// <param name="destinationFileFullName"> Имя файла со всеми префиксами и расширением </param>
+        public Task<MemoryStream> GetFileStreamAsync(string destinationFileFullName);
+
+        /// <summary> Возвращает ссылку на скачивание файла </summary>
+        /// <param name="destinationFileFullName"> Имя файла со всеми префиксами и расширением </param>
+        public string GetFileLink(string destinationFileFullName);
+
+        /// <summary> Возвращает ссылку на скачивание файла </summary>
+        /// <param name="destinationFileFullName"> Имя файла со всеми префиксами и расширением </param>
+        public Task<string> GetFileLinkAsync(string destinationFileFullName);
+
+        /// <summary>
+        /// Возвращает true если файл с destinationFileFullName
+        /// существует в хранилище
+        /// </summary>
+        /// <param name="destinationFileFullName"> Имя файла со всеми префиксами и расширением </param>
+        public Task<bool> FileExistAsync(string destinationFileFullName);
+
+        /// <summary>
+        /// Загружает file в хранилище
+        /// по маршруту, соответствующему destinationFileFullName
         /// </summary>
         /// <param name="file"></param>
-        /// <param name="path"></param>
-        public void UploadFile(byte[] file, string path, string fileName);
+        /// <param name="destinationFileFullName"> Имя файла со всеми префиксами и расширением </param>
+        public Task UploadFileAsync(byte[] file, string destinationFileFullName);
 
-        //public void DeleteFile(string filename);
+        /// <summary>
+        /// Удаляет файл с destinationFileFullName из хранилища
+        /// </summary>
+        /// <param name="destinationFileFullName"> Имя файла со всеми префиксами и расширением </param>
+        public Task DeleteFileAsync(string destinationFileFullName);
 
-        ///// <summary>
-        ///// Возвращает список строк с именами файлов,
-        ///// расположенных по определенному пути в хранилище
-        ///// </summary>
-        ///// <param name="path"></param>
-        ///// <returns>Массив строк</returns>
-        public List<string> ListFiles(string path);
+        /// <summary>
+        /// Возвращает список полных имён файлов,
+        /// содержащихся в директории destinationFolderFullName
+        /// </summary>
+        /// <param name="destinationFolderFullName"> Имя директории в хранилище со всеми префиксами </param>
+        public Task<List<string>> ListFilesAsync(string destinationFolderFullName);
     }
 }
