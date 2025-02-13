@@ -24,7 +24,6 @@ namespace Courses.Model.Courses
     public class Content
     {
         [Key] public int Id { get; set; }
-        public string? Text { get; set; }
         public int CourseId { get; set; }
         public Course Course { get; set; } = null!;
 
