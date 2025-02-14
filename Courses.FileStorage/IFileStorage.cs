@@ -28,6 +28,13 @@
         public Task<string> GetFileLinkAsync(string destinationFileFullName);
 
         /// <summary>
+        /// Возвращает ссылку на скачивание файла.
+        /// Если файл не найден - создаёт пустой файл по указанному пути.
+        /// </summary>
+        /// <param name="destinationFileFullName"> Имя файла со всеми префиксами и расширением </param>
+        public Task<string> GetFileLinkWithAutoCreateAsync(string destinationFileFullName);
+
+        /// <summary>
         /// Возвращает true если файл с destinationFileFullName
         /// существует в хранилище
         /// </summary>

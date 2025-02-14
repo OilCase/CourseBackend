@@ -243,7 +243,45 @@ namespace Courses.FileStorage
         }
 
         /// <inheritdoc/>
-        public async Task<bool> FileExistAsync(string destinationFileFullName)
+        public async Task<string> GetFileLinkWithAutoCreateAsync(string destinationFileFullName)
+        {
+            var (bucketName, fileNameWithoutBucketPrefix) = ParseFileName(destinationFileFullName);
+
+            var isBucketExist = await BucketExistAsync(bucketName);
+            if (!isBucketExist)
+            {
+                await MakeBucketAsync(new MakeBucketArgs().WithBucket(bucketName));
+            }
+
+            var isFileExists = await ObjectExistAsync(bucketName, fileNameWithoutBucketPrefix);
+            if (!isFileExists) // создаём и загружаем пустой файл
+            {
+                var stream = new MemoryStream(new byte[] { 0x20 });
+                await PutObjectAsync(new PutObjectArgs()
+                    .WithBucket(bucketName)
+                    .WithObject(fileNameWithoutBucketPrefix)
+                    .WithStreamData(stream)
+                    .WithObjectSize(stream.Length));
+                
+            }
+
+            try
+            {
+                String url = await PresignedGetObjectAsync(new PresignedGetObjectArgs()
+                    .WithBucket(bucketName)
+                    .WithObject(fileNameWithoutBucketPrefix)
+                    .WithExpiry(PresignedLifeTimeSeconds));
+                return url;
+            }
+            catch (MinioException ex)
+            {
+                _logger.LogError(ex, DateTime.UtcNow.ToLongTimeString());
+                throw;
+            }
+        }
+
+        /// <inheritdoc/>
+            public async Task<bool> FileExistAsync(string destinationFileFullName)
         {
             var (bucketName, fileNameWithoutBucketPrefix) = ParseFileName(destinationFileFullName);
 
