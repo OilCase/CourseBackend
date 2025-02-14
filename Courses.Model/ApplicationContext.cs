@@ -2,7 +2,6 @@ using Courses.Model.Courses;
 using Courses.Model.Courses.Testings;
 using Courses.Model.Labels;
 using Courses.Model.Users;
-using Courses.Model.UserSessions;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
@@ -17,7 +16,7 @@ namespace Courses.Model
 
         public ApplicationContext(DbContextOptions options) : base(options)
         {
-            Database.EnsureCreated();
+            //Database.EnsureCreated();
             Debug.WriteLine(Database.ProviderName);
             Debug.WriteLine(Database.GetConnectionString());
         }
@@ -276,8 +275,6 @@ namespace Courses.Model
         public virtual DbSet<Question> Questions { get; set; }
         public virtual DbSet<Competence> Competences { get; set; }
         public virtual DbSet<Answer> Answers { get; set; }
-        public virtual DbSet<Solution> Solutions { get; set; }
-        public virtual DbSet<TestingSession> TestingSessions { get; set; }
         public virtual DbSet<CourseChange> CourseChanges { get; set; }
 
         public virtual DbSet<Label> Labels { get; set; }

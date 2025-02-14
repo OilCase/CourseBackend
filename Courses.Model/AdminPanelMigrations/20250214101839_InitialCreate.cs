@@ -1,6 +1,6 @@
+﻿using System;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
-using System;
 
 #nullable disable
 
@@ -9,7 +9,7 @@ using System;
 namespace Courses.Model.AdminPanelMigrations
 {
     /// <inheritdoc />
-    public partial class Init : Migration
+    public partial class InitialCreate : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -375,7 +375,6 @@ namespace Courses.Model.AdminPanelMigrations
                 {
                     Id = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    Text = table.Column<string>(type: "text", nullable: true),
                     CourseId = table.Column<int>(type: "integer", nullable: false)
                 },
                 constraints: table =>
@@ -542,7 +541,7 @@ namespace Courses.Model.AdminPanelMigrations
                     Id = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     PartId = table.Column<int>(type: "integer", nullable: false),
-                    Title = table.Column<string>(type: "text", nullable: true),
+                    Title = table.Column<string>(type: "character varying(4096)", maxLength: 4096, nullable: false),
                     SaleableProductId = table.Column<int>(type: "integer", nullable: true),
                     CourseId = table.Column<int>(type: "integer", nullable: false),
                     OrderInPart = table.Column<int>(type: "integer", nullable: false)
@@ -908,6 +907,12 @@ namespace Courses.Model.AdminPanelMigrations
                 column: "SaleableProductId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_Courses_Title",
+                table: "Courses",
+                column: "Title",
+                unique: true);
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Directions_DescriptionId",
                 table: "Directions",
                 column: "DescriptionId");
@@ -954,6 +959,12 @@ namespace Courses.Model.AdminPanelMigrations
                 name: "IX_Labels_LocalizationId",
                 table: "Labels",
                 column: "LocalizationId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Labels_Name",
+                table: "Labels",
+                column: "Name",
+                unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "IX_LocalizationValues_LanguageId",

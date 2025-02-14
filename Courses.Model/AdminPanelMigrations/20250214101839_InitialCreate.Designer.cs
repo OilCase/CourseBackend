@@ -12,8 +12,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Courses.Model.AdminPanelMigrations
 {
     [DbContext(typeof(ApplicationContext))]
-    [Migration("20241023045248_AddLabelNameIndex")]
-    partial class AddLabelNameIndex
+    [Migration("20250214101839_InitialCreate")]
+    partial class InitialCreate
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -46,7 +46,9 @@ namespace Courses.Model.AdminPanelMigrations
                         .HasColumnType("integer");
 
                     b.Property<string>("Title")
-                        .HasColumnType("text");
+                        .IsRequired()
+                        .HasMaxLength(4096)
+                        .HasColumnType("character varying(4096)");
 
                     b.HasKey("Id");
 
@@ -69,9 +71,6 @@ namespace Courses.Model.AdminPanelMigrations
 
                     b.Property<int>("CourseId")
                         .HasColumnType("integer");
-
-                    b.Property<string>("Text")
-                        .HasColumnType("text");
 
                     b.HasKey("Id");
 
@@ -1461,8 +1460,7 @@ namespace Courses.Model.AdminPanelMigrations
                 {
                     b.Navigation("Sections");
 
-                    b.Navigation("Testing")
-                        .IsRequired();
+                    b.Navigation("Testing");
                 });
 
             modelBuilder.Entity("Courses.Model.Courses.Course", b =>

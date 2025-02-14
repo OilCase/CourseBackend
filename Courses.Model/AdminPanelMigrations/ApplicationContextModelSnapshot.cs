@@ -43,7 +43,9 @@ namespace Courses.Model.AdminPanelMigrations
                         .HasColumnType("integer");
 
                     b.Property<string>("Title")
-                        .HasColumnType("text");
+                        .IsRequired()
+                        .HasMaxLength(4096)
+                        .HasColumnType("character varying(4096)");
 
                     b.HasKey("Id");
 
@@ -66,9 +68,6 @@ namespace Courses.Model.AdminPanelMigrations
 
                     b.Property<int>("CourseId")
                         .HasColumnType("integer");
-
-                    b.Property<string>("Text")
-                        .HasColumnType("text");
 
                     b.HasKey("Id");
 
@@ -796,64 +795,6 @@ namespace Courses.Model.AdminPanelMigrations
                     b.ToTable("Translations");
                 });
 
-            modelBuilder.Entity("Courses.Model.UserSessions.Solution", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
-                    b.Property<int?>("AnswerId")
-                        .HasColumnType("integer");
-
-                    b.Property<int>("QuestionId")
-                        .HasColumnType("integer");
-
-                    b.Property<int>("TestingSessionId")
-                        .HasColumnType("integer");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("AnswerId");
-
-                    b.HasIndex("QuestionId");
-
-                    b.HasIndex("TestingSessionId");
-
-                    b.ToTable("Solutions");
-                });
-
-            modelBuilder.Entity("Courses.Model.UserSessions.TestingSession", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
-                    b.Property<DateTime>("DateFinish")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<int>("TestingId")
-                        .HasColumnType("integer");
-
-                    b.Property<DateTime>("TimeStart")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("UserId")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("TestingId");
-
-                    b.HasIndex("UserId");
-
-                    b.ToTable("TestingSessions");
-                });
-
             modelBuilder.Entity("Courses.Model.Users.User", b =>
                 {
                     b.Property<string>("Id")
@@ -1359,50 +1300,6 @@ namespace Courses.Model.AdminPanelMigrations
                     b.Navigation("Language");
                 });
 
-            modelBuilder.Entity("Courses.Model.UserSessions.Solution", b =>
-                {
-                    b.HasOne("Courses.Model.Courses.Testings.Answer", "Answer")
-                        .WithMany()
-                        .HasForeignKey("AnswerId");
-
-                    b.HasOne("Courses.Model.Courses.Testings.Question", "Question")
-                        .WithMany()
-                        .HasForeignKey("QuestionId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("Courses.Model.UserSessions.TestingSession", "TestingSession")
-                        .WithMany("Solutions")
-                        .HasForeignKey("TestingSessionId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Answer");
-
-                    b.Navigation("Question");
-
-                    b.Navigation("TestingSession");
-                });
-
-            modelBuilder.Entity("Courses.Model.UserSessions.TestingSession", b =>
-                {
-                    b.HasOne("Courses.Model.Courses.Testings.Testing", "Testing")
-                        .WithMany()
-                        .HasForeignKey("TestingId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("Courses.Model.Users.User", "User")
-                        .WithMany()
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Testing");
-
-                    b.Navigation("User");
-                });
-
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
                 {
                     b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole", null)
@@ -1458,8 +1355,7 @@ namespace Courses.Model.AdminPanelMigrations
                 {
                     b.Navigation("Sections");
 
-                    b.Navigation("Testing")
-                        .IsRequired();
+                    b.Navigation("Testing");
                 });
 
             modelBuilder.Entity("Courses.Model.Courses.Course", b =>
@@ -1507,11 +1403,6 @@ namespace Courses.Model.AdminPanelMigrations
             modelBuilder.Entity("Courses.Model.Localization", b =>
                 {
                     b.Navigation("Values");
-                });
-
-            modelBuilder.Entity("Courses.Model.UserSessions.TestingSession", b =>
-                {
-                    b.Navigation("Solutions");
                 });
 #pragma warning restore 612, 618
         }
