@@ -13,6 +13,5 @@ namespace Courses.Model.Users
     {
         [EnumMember(Value = "Admin")] Admin = 1,
         [EnumMember(Value = "Author")] Author = 2,
-        [EnumMember(Value = "Regular")] Regular = 3
     }
 }

@@ -676,34 +676,6 @@ namespace Courses.Model.AdminPanelMigrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "TestingSessions",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "integer", nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    UserId = table.Column<string>(type: "text", nullable: false),
-                    TestingId = table.Column<int>(type: "integer", nullable: false),
-                    TimeStart = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
-                    DateFinish = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_TestingSessions", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_TestingSessions_AspNetUsers_UserId",
-                        column: x => x.UserId,
-                        principalTable: "AspNetUsers",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_TestingSessions_Testings_TestingId",
-                        column: x => x.TestingId,
-                        principalTable: "Testings",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "Answers",
                 columns: table => new
                 {
@@ -724,36 +696,13 @@ namespace Courses.Model.AdminPanelMigrations
                         onDelete: ReferentialAction.Cascade);
                 });
 
-            migrationBuilder.CreateTable(
-                name: "Solutions",
-                columns: table => new
+            migrationBuilder.InsertData(
+                table: "AspNetRoles",
+                columns: new[] { "Id", "ConcurrencyStamp", "Name", "NormalizedName" },
+                values: new object[,]
                 {
-                    Id = table.Column<int>(type: "integer", nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    TestingSessionId = table.Column<int>(type: "integer", nullable: false),
-                    QuestionId = table.Column<int>(type: "integer", nullable: false),
-                    AnswerId = table.Column<int>(type: "integer", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Solutions", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_Solutions_Answers_AnswerId",
-                        column: x => x.AnswerId,
-                        principalTable: "Answers",
-                        principalColumn: "Id");
-                    table.ForeignKey(
-                        name: "FK_Solutions_Questions_QuestionId",
-                        column: x => x.QuestionId,
-                        principalTable: "Questions",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_Solutions_TestingSessions_TestingSessionId",
-                        column: x => x.TestingSessionId,
-                        principalTable: "TestingSessions",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                    { "10747b75-1dc5-4e9a-8f80-6c641f979957", null, "Author", "AUTHOR" },
+                    { "efde4772-900d-4b60-bbb6-e1607bf09747", null, "Admin", "ADMIN" }
                 });
 
             migrationBuilder.InsertData(
@@ -764,48 +713,6 @@ namespace Courses.Model.AdminPanelMigrations
                     { "en", "English" },
                     { "fr", "Français" },
                     { "ru", "Русский" }
-                });
-
-            migrationBuilder.InsertData(
-                table: "Localizations",
-                column: "Id",
-                values: new object[]
-                {
-                    1,
-                    2,
-                    3,
-                    4,
-                    5,
-                    6
-                });
-
-            migrationBuilder.InsertData(
-                table: "Directions",
-                columns: new[] { "Id", "DescriptionId", "IsVisible", "LastChangeDateTime", "LocalizationId" },
-                values: new object[,]
-                {
-                    { 1, 4, true, new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), 1 },
-                    { 2, 5, true, new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), 2 },
-                    { 3, 6, true, new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), 3 }
-                });
-
-            migrationBuilder.InsertData(
-                table: "LocalizationValues",
-                columns: new[] { "Id", "LanguageId", "LocalizationId", "Value" },
-                values: new object[,]
-                {
-                    { 1, "en", 1, "shelf" },
-                    { 2, "ru", 1, "шельф" },
-                    { 3, "en", 2, "geology" },
-                    { 4, "ru", 2, "геология" },
-                    { 5, "en", 3, "drilling" },
-                    { 6, "ru", 3, "бурение" },
-                    { 7, "en", 4, "Shelf Description" },
-                    { 8, "ru", 4, "шельфовое описание" },
-                    { 9, "en", 5, "Geology Description" },
-                    { 10, "ru", 5, "геологичное описание" },
-                    { 11, "en", 6, "Drilling Description" },
-                    { 12, "ru", 6, "бурительное описание" }
                 });
 
             migrationBuilder.CreateIndex(
@@ -1017,21 +924,6 @@ namespace Courses.Model.AdminPanelMigrations
                 column: "CourseId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Solutions_AnswerId",
-                table: "Solutions",
-                column: "AnswerId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Solutions_QuestionId",
-                table: "Solutions",
-                column: "QuestionId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Solutions_TestingSessionId",
-                table: "Solutions",
-                column: "TestingSessionId");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_Testings_ChapterId",
                 table: "Testings",
                 column: "ChapterId",
@@ -1043,16 +935,6 @@ namespace Courses.Model.AdminPanelMigrations
                 column: "CourseId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_TestingSessions_TestingId",
-                table: "TestingSessions",
-                column: "TestingId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_TestingSessions_UserId",
-                table: "TestingSessions",
-                column: "UserId");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_Translations_LanguageId",
                 table: "Translations",
                 column: "LanguageId");
@@ -1061,6 +943,9 @@ namespace Courses.Model.AdminPanelMigrations
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.DropTable(
+                name: "Answers");
+
             migrationBuilder.DropTable(
                 name: "AspNetRoleClaims");
 
@@ -1101,28 +986,19 @@ namespace Courses.Model.AdminPanelMigrations
                 name: "Sections");
 
             migrationBuilder.DropTable(
-                name: "Solutions");
-
-            migrationBuilder.DropTable(
                 name: "Translations");
-
-            migrationBuilder.DropTable(
-                name: "AspNetRoles");
-
-            migrationBuilder.DropTable(
-                name: "Headings");
-
-            migrationBuilder.DropTable(
-                name: "Answers");
-
-            migrationBuilder.DropTable(
-                name: "TestingSessions");
 
             migrationBuilder.DropTable(
                 name: "Questions");
 
             migrationBuilder.DropTable(
+                name: "AspNetRoles");
+
+            migrationBuilder.DropTable(
                 name: "AspNetUsers");
+
+            migrationBuilder.DropTable(
+                name: "Headings");
 
             migrationBuilder.DropTable(
                 name: "Competences");

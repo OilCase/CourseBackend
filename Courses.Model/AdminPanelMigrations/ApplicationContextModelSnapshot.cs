@@ -255,32 +255,6 @@ namespace Courses.Model.AdminPanelMigrations
                     b.HasIndex("LocalizationId");
 
                     b.ToTable("Directions");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            DescriptionId = 4,
-                            IsVisible = true,
-                            LastChangeDateTime = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            LocalizationId = 1
-                        },
-                        new
-                        {
-                            Id = 2,
-                            DescriptionId = 5,
-                            IsVisible = true,
-                            LastChangeDateTime = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            LocalizationId = 2
-                        },
-                        new
-                        {
-                            Id = 3,
-                            DescriptionId = 6,
-                            IsVisible = true,
-                            LastChangeDateTime = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            LocalizationId = 3
-                        });
                 });
 
             modelBuilder.Entity("Courses.Model.Courses.FinalPage", b =>
@@ -622,32 +596,6 @@ namespace Courses.Model.AdminPanelMigrations
                     b.HasKey("Id");
 
                     b.ToTable("Localizations");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1
-                        },
-                        new
-                        {
-                            Id = 2
-                        },
-                        new
-                        {
-                            Id = 3
-                        },
-                        new
-                        {
-                            Id = 4
-                        },
-                        new
-                        {
-                            Id = 5
-                        },
-                        new
-                        {
-                            Id = 6
-                        });
                 });
 
             modelBuilder.Entity("Courses.Model.LocalizationValue", b =>
@@ -676,92 +624,6 @@ namespace Courses.Model.AdminPanelMigrations
                     b.HasIndex("LocalizationId");
 
                     b.ToTable("LocalizationValues");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            LanguageId = "en",
-                            LocalizationId = 1,
-                            Value = "shelf"
-                        },
-                        new
-                        {
-                            Id = 2,
-                            LanguageId = "ru",
-                            LocalizationId = 1,
-                            Value = "шельф"
-                        },
-                        new
-                        {
-                            Id = 3,
-                            LanguageId = "en",
-                            LocalizationId = 2,
-                            Value = "geology"
-                        },
-                        new
-                        {
-                            Id = 4,
-                            LanguageId = "ru",
-                            LocalizationId = 2,
-                            Value = "геология"
-                        },
-                        new
-                        {
-                            Id = 5,
-                            LanguageId = "en",
-                            LocalizationId = 3,
-                            Value = "drilling"
-                        },
-                        new
-                        {
-                            Id = 6,
-                            LanguageId = "ru",
-                            LocalizationId = 3,
-                            Value = "бурение"
-                        },
-                        new
-                        {
-                            Id = 7,
-                            LanguageId = "en",
-                            LocalizationId = 4,
-                            Value = "Shelf Description"
-                        },
-                        new
-                        {
-                            Id = 8,
-                            LanguageId = "ru",
-                            LocalizationId = 4,
-                            Value = "шельфовое описание"
-                        },
-                        new
-                        {
-                            Id = 9,
-                            LanguageId = "en",
-                            LocalizationId = 5,
-                            Value = "Geology Description"
-                        },
-                        new
-                        {
-                            Id = 10,
-                            LanguageId = "ru",
-                            LocalizationId = 5,
-                            Value = "геологичное описание"
-                        },
-                        new
-                        {
-                            Id = 11,
-                            LanguageId = "en",
-                            LocalizationId = 6,
-                            Value = "Drilling Description"
-                        },
-                        new
-                        {
-                            Id = 12,
-                            LanguageId = "ru",
-                            LocalizationId = 6,
-                            Value = "бурительное описание"
-                        });
                 });
 
             modelBuilder.Entity("Courses.Model.Translation", b =>
@@ -888,6 +750,20 @@ namespace Courses.Model.AdminPanelMigrations
                         .HasDatabaseName("RoleNameIndex");
 
                     b.ToTable("AspNetRoles", (string)null);
+
+                    b.HasData(
+                        new
+                        {
+                            Id = "efde4772-900d-4b60-bbb6-e1607bf09747",
+                            Name = "Admin",
+                            NormalizedName = "ADMIN"
+                        },
+                        new
+                        {
+                            Id = "10747b75-1dc5-4e9a-8f80-6c641f979957",
+                            Name = "Author",
+                            NormalizedName = "AUTHOR"
+                        });
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>

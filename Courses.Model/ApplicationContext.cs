@@ -16,7 +16,7 @@ namespace Courses.Model
 
         public ApplicationContext(DbContextOptions options) : base(options)
         {
-            Database.EnsureCreated();
+            //Database.EnsureCreated();
             Debug.WriteLine(Database.ProviderName);
             Debug.WriteLine(Database.GetConnectionString());
         }
@@ -45,7 +45,6 @@ namespace Courses.Model
             RemoveContentWith<Question>();
             RemoveContentWith<Section>();
             RemoveContentWith<Page>();
-            //DeleteRemovedContentDirectories();
             return base.SaveChanges();
         }
 
@@ -72,82 +71,14 @@ namespace Courses.Model
                 new() { Id = "fr", Name = "Français" }
             );
 
-            var shelfLocalization = new Localization() { Id = 1 };
-            builder.Entity<Localization>().HasData(shelfLocalization);
-            var shelfLocalizationValues = new[]
-            {
-                new LocalizationValue() {Id = 1, LocalizationId = 1, LanguageId = "en", Value = "shelf" },
-                new LocalizationValue() {Id = 2, LocalizationId = 1, LanguageId = "ru", Value = "шельф" }
-            };
-            builder.Entity<LocalizationValue>().HasData(shelfLocalizationValues);
-
-            var geologyLocalization = new Localization() { Id = 2 };
-            builder.Entity<Localization>().HasData(geologyLocalization);
-            var geologyLocalizationValues = new[]
-            {
-                new LocalizationValue() {Id = 3, LocalizationId = 2, LanguageId = "en", Value = "geology" },
-                new LocalizationValue() {Id = 4, LocalizationId = 2, LanguageId = "ru", Value = "геология" }
-            };
-            builder.Entity<LocalizationValue>().HasData(geologyLocalizationValues);
-
-            var drillingLocalization = new Localization() { Id = 3 };
-            builder.Entity<Localization>().HasData(drillingLocalization);
-            var drillingLocalizationValues = new[]
-            {
-                new LocalizationValue() {Id = 5, LocalizationId = 3, LanguageId = "en", Value = "drilling" },
-                new LocalizationValue() {Id = 6, LocalizationId = 3, LanguageId = "ru", Value = "бурение" }
-            };
-            builder.Entity<LocalizationValue>().HasData(drillingLocalizationValues);
-
-            var shelfDescription = new Localization() { Id = 4 };
-            builder.Entity<Localization>().HasData(shelfDescription);
-            var shelfDescriptionValues = new[]
-            {
-                new LocalizationValue() {Id = 7, LocalizationId = 4, LanguageId = "en", Value = "Shelf Description" },
-                new LocalizationValue() {Id = 8, LocalizationId = 4, LanguageId = "ru", Value = "шельфовое описание" }
-            };
-            builder.Entity<LocalizationValue>().HasData(shelfDescriptionValues);
-
-            var geologyDescription = new Localization() { Id = 5 };
-            builder.Entity<Localization>().HasData(geologyDescription);
-            var geologyDescriptionValues = new[]
-            {
-                new LocalizationValue() {Id = 9, LocalizationId = 5, LanguageId = "en", Value = "Geology Description" },
-                new LocalizationValue() {Id = 10, LocalizationId = 5, LanguageId = "ru", Value = "геологичное описание" }
-            };
-            builder.Entity<LocalizationValue>().HasData(geologyDescriptionValues);
-
-            var drillingDescription = new Localization() { Id = 6 };
-            builder.Entity<Localization>().HasData(drillingDescription);
-            var drillingDescriptionValues = new[]
-            {
-                new LocalizationValue() {Id = 11, LocalizationId = 6, LanguageId = "en", Value = "Drilling Description" },
-                new LocalizationValue() {Id = 12, LocalizationId = 6, LanguageId = "ru", Value = "бурительное описание" }
-            };
-            builder.Entity<LocalizationValue>().HasData(drillingDescriptionValues);
-
-            builder.Entity<Direction>().HasData(
-                new()
-                {
-                    Id = 1,
-                    LocalizationId = 1,
-                    DescriptionId = 4,
-                    IsVisible = true,
-                },
-                new()
-                {
-                    Id = 2,
-                    LocalizationId = 2,
-                    DescriptionId = 5,
-                    IsVisible = true,
-                },
-                new()
-                {
-                    Id = 3,
-                    DescriptionId = 6,
-                    LocalizationId = 3,
-                    IsVisible = true,
-                });
+            builder.Entity<IdentityRole>().HasData(
+                Enum.GetNames(typeof(EnumUserRoles)).Select(userRole =>
+                    new IdentityRole()
+                    {
+                        Name = userRole,
+                        NormalizedName = userRole.ToUpper(),
+                    }).ToArray()
+                );
         }
 
         public static void InitRelationships(ModelBuilder builder)
