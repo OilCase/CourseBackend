@@ -166,7 +166,7 @@ namespace Courses.FileStorage
         }
 
         /// <inheritdoc/>
-            public async Task<byte[]> GetFileBytesAsync(string destinationFileFullName)
+        public async Task<byte[]> GetFileBytesAsync(string destinationFileFullName)
         {
             var (bucketName, fileNameWithoutBucketPrefix) = ParseFileName(destinationFileFullName);
 
@@ -262,7 +262,7 @@ namespace Courses.FileStorage
                     .WithObject(fileNameWithoutBucketPrefix)
                     .WithStreamData(stream)
                     .WithObjectSize(stream.Length));
-                
+
             }
 
             try
@@ -281,7 +281,7 @@ namespace Courses.FileStorage
         }
 
         /// <inheritdoc/>
-            public async Task<bool> FileExistAsync(string destinationFileFullName)
+        public async Task<bool> FileExistAsync(string destinationFileFullName)
         {
             var (bucketName, fileNameWithoutBucketPrefix) = ParseFileName(destinationFileFullName);
 
