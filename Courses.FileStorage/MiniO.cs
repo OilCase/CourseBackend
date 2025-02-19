@@ -1,9 +1,6 @@
-﻿using System.IO.MemoryMappedFiles;
-using System.Text;
-using Microsoft.Extensions.Configuration;
+﻿using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Minio;
-using Minio.DataModel;
 using Minio.DataModel.Args;
 using Minio.Exceptions;
 
@@ -82,14 +79,14 @@ namespace Courses.FileStorage
             var isBucketExist = await BucketExistAsync(bucketName);
             if (!isBucketExist)
             {
-                throw new ArgumentException($"В хранилище нет бакета с таким именем: {bucketName}");
+                _logger.LogError($"В хранилище нет бакета с таким именем: {bucketName}");
             }
 
             var removeObjectArgs = new RemoveObjectArgs()
                 .WithBucket(bucketName)
                 .WithObject(fileName);
-
             await RemoveObjectAsync(removeObjectArgs);
+
         }
 
         /// <summary>
@@ -262,7 +259,6 @@ namespace Courses.FileStorage
                     .WithObject(fileNameWithoutBucketPrefix)
                     .WithStreamData(stream)
                     .WithObjectSize(stream.Length));
-
             }
 
             try
