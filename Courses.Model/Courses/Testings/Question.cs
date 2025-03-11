@@ -17,6 +17,7 @@ namespace Courses.Model.Courses.Testings
         public Competence? Competence { get; set; }
         public int OrderInTesting { get; set; }
         public bool ShowFullTitle { get; set; } // отображать тело вопроса в названии или нет
+        public bool IsContentFilled { get; set; } // заполнено ли содержимое вопроса
 
         // Вес вопроса, определяется в админке и используется в OilID
         public int CorrectAnswerScore { get; set; }
